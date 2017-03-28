@@ -78,7 +78,7 @@ ipcMain.on('open-file-dialog', (event) =>
     event.sender.send('selected-file', files);
     fs.readFile(files[0], 'utf8', (err, data) => {
       if (err) throw err;
-      parse(data, { autoParse: true, columns: true }, (error, result) => {
+      parse(data, { autoParse: true }, (error, result) => {
         if (error) throw error;
         event.sender.send('file-loaded', result);
       });
