@@ -1,11 +1,10 @@
 /**
  * @flow
  */
-import cn from 'classnames';
 import React, { PropTypes, PureComponent } from 'react';
 import { AutoSizer, MultiGrid } from 'react-virtualized';
-import { COLUMNS, STATES } from '../utils/constants';
-import styles from './ResponseTable.css';
+import { COLUMNS } from '../utils/constants';
+import styles from './FocusGroupTable.css';
 
 const STYLE = {
   border: '1px solid #ddd',
@@ -25,7 +24,7 @@ const STYLE_TOP_RIGHT_GRID = {
   fontWeight: 'bold'
 };
 
-class ResponseTable extends PureComponent {
+class FocusGroupTable extends PureComponent {
   static propTypes = {
     list: PropTypes.arrayOf(PropTypes.any).isRequired,
   }
@@ -54,38 +53,16 @@ class ResponseTable extends PureComponent {
     const columnName = COLUMNS[columnIndex].name;
 
     if (columnIndex === 0) {
-      const { addToGroup, markAsUnavailable, markAsAvailable } = this.props;
-
+      const { removeFromGroup } = this.props;
       return (
         <div
           className={styles.Cell}
           key={key}
           style={style}
         >
-          {datum.state !== STATES.UNAVAILABLE && (
-            <button
-              type="button"
-              onClick={() => addToGroup(datum.id)}
-            >
-              +
-            </button>
-          )}
-          {datum.state !== STATES.UNAVAILABLE && (
-            <button
-              type="button"
-              onClick={() => markAsUnavailable(datum.id)}
-            >
-              X
-            </button>
-          )}
-          {datum.state === STATES.UNAVAILABLE && (
-            <button
-              type="button"
-              onClick={() => markAsAvailable(datum.id)}
-            >
-              O
-            </button>
-          )}
+          <button type="button" onClick={() => removeFromGroup(datum.id)}>
+            -
+          </button>
         </div>
       );
     }
@@ -138,5 +115,4 @@ class ResponseTable extends PureComponent {
   }
 }
 
-
-export default ResponseTable;
+export default FocusGroupTable;

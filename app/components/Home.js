@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import { Link } from 'react-router';
 import ResponseTable from './ResponseTable';
+import FocusGroupTable from './FocusGroupTable';
 import styles from './Home.css';
 
 export default class Home extends Component {
@@ -21,13 +22,31 @@ export default class Home extends Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { 
+      data,
+      focusGroup,
+      addToGroup,
+      removeFromGroup,
+      markAsUnavailable,
+      markAsAvailable,
+    } = this.props;
     return (
       <div>
         <div className={styles.container} data-tid="container">
           {/*<Link to="/counter">to Counter</Link>*/}
           <button type="button" onClick={this.onBtnClick}>Import Data</button>
-          <ResponseTable list={data} />
+          <ResponseTable 
+            list={data} 
+            addToGroup={addToGroup}
+            markAsUnavailable={markAsUnavailable}
+            markAsAvailable={markAsAvailable}
+          />
+          {data.length > 0 && (
+            <FocusGroupTable 
+              list={focusGroup} 
+              removeFromGroup={removeFromGroup}
+            />
+          )}
         </div>
       </div>
     );

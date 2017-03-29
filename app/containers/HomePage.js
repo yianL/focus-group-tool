@@ -2,17 +2,18 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Home from '../components/Home';
+import { STATES } from '../utils/constants';
 import * as CandidateActions from '../actions/candidates';
 
-function mapStateToProps(state) {
-  return {
-    data: state.candidates.data
-  };
-}
+const getFocusGroup = (state) =>
+  state.candidates.data.filter((c) => c.state === STATES.CHOSEN);
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(CandidateActions, dispatch);
-}
+const mapStateToProps = (state) => ({
+  data: state.candidates.data,
+  focusGroup: getFocusGroup(state),
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators(CandidateActions, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
