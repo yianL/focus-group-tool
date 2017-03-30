@@ -23,7 +23,7 @@ export default function candidates(state = InitialState, action) {
 
         datum.forEach((d, idx) => {
           if (idx === 0) { return; }
-          const columnName = COLUMNS[idx].name;
+          const columnName = COLUMNS[idx + 1].name;
           candidate[columnName] = d;
         });
 

@@ -3,7 +3,7 @@
  */
 import React, { PropTypes, PureComponent } from 'react';
 import { AutoSizer, MultiGrid } from 'react-virtualized';
-import { COLUMNS } from '../utils/constants';
+import { COLUMNS, DEMOGRAPHIC_METRICS } from '../utils/constants';
 import styles from './FocusGroupTable.css';
 
 const STYLE = {
@@ -27,30 +27,64 @@ const STYLE_TOP_RIGHT_GRID = {
 class FocusGroupTable extends PureComponent {
   static propTypes = {
     list: PropTypes.arrayOf(PropTypes.any).isRequired,
+    constraints: PropTypes.object.isRequired,
   }
 
-  getColumnWidth = ({ index }) => COLUMNS[index].width;
+  constructor(props) {
+    super(props);
+
+    this.columns = this.getColumns(props.constraints);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.constraints !== this.props.constraints) {
+      this.columns = this.getColumns(nextProps.constraints);
+    }
+  }
+
+  getColumnWidth = ({ index }) => index < 3 ? COLUMNS[index].width : 80;
+
+  getColumns = (constraints) => COLUMNS.slice(0, 3).concat(
+    Object.keys(constraints).reduce((prev, current) => {
+      const columnGroup = DEMOGRAPHIC_METRICS[current];
+      columnGroup[0].category = current;
+      return prev.concat(columnGroup);
+    }, [])
+  )
 
   cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
     const {
       list,
     } = this.props;
+    const column = this.columns[columnIndex];
 
     if (rowIndex === 0) {
+      return (
+        <div
+          className={styles.CategoryCell}
+          key={key}
+          style={style}
+        >
+          {column.category}
+        </div>
+      );
+    }
+
+    if (rowIndex === 1) {
       return (
         <div
           className={styles.Cell}
           key={key}
           style={style}
         >
-          {COLUMNS[columnIndex].header}
+          {column.header || column.label}
         </div>
       );
     }
 
-    const id = rowIndex - 1;
+    const id = rowIndex - 2;
     const datum = list[id];
-    const columnName = COLUMNS[columnIndex].name;
+    const columnName = column.name;
 
     if (columnIndex === 0) {
       const { removeFromGroup } = this.props;
@@ -67,13 +101,25 @@ class FocusGroupTable extends PureComponent {
       );
     }
 
+    if (columnIndex < 3) {
+      return (
+        <div
+          className={styles.Cell}
+          key={key}
+          style={style}
+        >
+          {datum[columnName]}
+        </div>
+      );
+    }
+
     return (
       <div
         className={styles.Cell}
         key={key}
         style={style}
       >
-        {datum[columnName]}
+        {datum[columnName].includes(column.value) ? 'O' : ''}
       </div>
     );
   }
@@ -93,14 +139,14 @@ class FocusGroupTable extends PureComponent {
             {({ width }) => (
               <MultiGrid
                 list={list}
-                fixedColumnCount={2}
-                fixedRowCount={1}
+                fixedColumnCount={3}
+                fixedRowCount={2}
                 cellRenderer={this.cellRenderer}
                 columnWidth={this.getColumnWidth}
-                columnCount={COLUMNS.length}
+                columnCount={this.columns.length}
                 height={300}
                 rowHeight={40}
-                rowCount={list.length > 0 ? list.length + 1 : 0}
+                rowCount={list.length > 0 ? list.length + 2 : 0}
                 style={STYLE}
                 styleBottomLeftGrid={STYLE_BOTTOM_LEFT_GRID}
                 styleTopLeftGrid={STYLE_TOP_LEFT_GRID}

@@ -31,3 +31,11 @@
   border-right: 1px solid #eee;
   height: 40px !important;
 }
+
+.CategoryCell {
+  border: none;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

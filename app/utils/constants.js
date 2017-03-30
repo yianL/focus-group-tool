@@ -12,8 +12,64 @@ const STATES = {
   DEFAULT: 'DEFAULT',
 };
 
+const DEMOGRAPHIC_METRICS = {
+  education: [
+    { name: 'education', value: 'Less than 9th grade', label: '< 9th' },
+    { name: 'education', value: '9th to 12 grade, no diploma', label: '9-12' },
+    { name: 'education', value: 'High school graduate (includes equivalency)', label: 'HS' },
+    { name: 'education', value: 'Some college, no degree', label: 'Col' },
+    { name: 'education', value: 'Associate\'s degree', label: 'AS' },
+    { name: 'education', value: 'Bachelor\'s degree', label: 'BS' },
+    { name: 'education', value: 'Graduate or professional degree', label: 'Grad' },
+  ],
+  age: [
+    { name: 'age', value: '18-29', label: '18-29' },
+    { name: 'age', value: '30-39', label: '30-39' },
+    { name: 'age', value: '40-49', label: '40-49' },
+    { name: 'age', value: '50-59', label: '50-59' },
+    { name: 'age', value: '60-69', label: '60-69' },
+    { name: 'age', value: '70-79', label: '70-79' },
+    { name: 'age', value: '80 years and over', label: '80+' },
+  ],
+  ethnicity: [
+    { name: 'ethnicity', value: 'Black or African American', label: 'Bl' },
+    { name: 'ethnicity', value: 'American Indian or Alaska Native', label: 'Am' },
+    { name: 'ethnicity', value: 'Asian', label: 'As' },
+    { name: 'ethnicity', value: 'Native Hawaiian and Other Pacific Islander', label: 'Pa' },
+    { name: 'ethnicity', value: 'White (not Hispanic or Latino)', label: 'Wh' },
+    { name: 'ethnicity', value: 'Hispanic or Latino', label: 'Hi' },
+    { name: 'ethnicity', value: 'Some other race', label: 'Other' },
+  ],
+  gender: [
+    { name: 'gender', value: 'Male', label: 'M' },
+    { name: 'gender', value: 'Female', label: 'F' },
+  ],
+  married: [
+    { name: 'married', value: 'Yes', label: 'Y' },
+    { name: 'married', value: 'No', label: 'N' },
+  ],
+  income: [
+    { name: 'income', value: 'Less than $35,000 per year', label: '< 35K' },
+    { name: 'income', value: '$35,000 to $75,000 per year', label: '35-75K' },
+    { name: 'income', value: '$75,000 to $100,000 per year', label: '75-100K' },
+    { name: 'income', value: '$100,000 to $150,000 per year', label: '100-150K' },
+    { name: 'income', value: '$150,000 to $200,000 per year', label: '150-200K' },
+    { name: 'income', value: 'More than $200,000 per year', label: '200K+' },
+  ],
+  children: [
+    { name: 'children', value: 'Yes', label: 'Y' },
+    { name: 'children', value: 'No', label: 'N' },
+  ],
+  employed: [
+    { name: 'employed', value: 'Yes - full time', label: 'Full' },
+    { name: 'employed', value: 'Yes - part time', label: 'Part' },
+    { name: 'employed', value: 'No', label: 'No' },
+  ],
+};
+
 const COLUMNS = [
   { header: 'Actions', width: WIDTH.action },
+  { header: 'ID', width: WIDTH.action, name: 'id' },
   { header: 'Full Name', width: WIDTH.long, name: 'name' },
   { header: 'Email', width: WIDTH.long, name: 'email' },
   { header: 'Participated in a focus group', width: WIDTH.boolean, name: 'participatedInFocusGroup' },
@@ -53,4 +109,5 @@ export default {
   STATES,
   WIDTH,
   COLUMNS,
+  DEMOGRAPHIC_METRICS,
 };

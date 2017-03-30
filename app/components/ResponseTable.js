@@ -1,7 +1,6 @@
 /**
  * @flow
  */
-import cn from 'classnames';
 import React, { PropTypes, PureComponent } from 'react';
 import { AutoSizer, MultiGrid } from 'react-virtualized';
 import { COLUMNS, STATES } from '../utils/constants';
@@ -116,7 +115,7 @@ class ResponseTable extends PureComponent {
             {({ width }) => (
               <MultiGrid
                 list={list}
-                fixedColumnCount={2}
+                fixedColumnCount={3}
                 fixedRowCount={1}
                 cellRenderer={this.cellRenderer}
                 columnWidth={this.getColumnWidth}
