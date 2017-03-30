@@ -1,18 +1,13 @@
 // @flow
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Home from '../components/Home';
-import { STATES } from '../utils/constants';
+import CreateGroup from '../components/CreateGroup';
 import * as CandidateActions from '../actions/candidates';
-
-const getFocusGroup = (state) =>
-  state.candidates.data.filter((c) => c.state === STATES.CHOSEN);
 
 const mapStateToProps = (state) => ({
   data: state.candidates.data,
-  focusGroup: getFocusGroup(state),
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(CandidateActions, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateGroup);

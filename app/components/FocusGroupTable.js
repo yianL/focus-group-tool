@@ -46,7 +46,7 @@ class FocusGroupTable extends PureComponent {
 
   getColumns = (constraints) => COLUMNS.slice(0, 3).concat(
     Object.keys(constraints).reduce((prev, current) => {
-      const columnGroup = DEMOGRAPHIC_METRICS[current];
+      const columnGroup = DEMOGRAPHIC_METRICS[current].columns;
       columnGroup[0].category = current;
       return prev.concat(columnGroup);
     }, [])
@@ -71,11 +71,12 @@ class FocusGroupTable extends PureComponent {
     }
 
     if (rowIndex === 1) {
+      const demoColumn = DEMOGRAPHIC_METRICS[column.name] || { style: {} };
       return (
         <div
           className={styles.Cell}
           key={key}
-          style={style}
+          style={{ ...style, ...demoColumn.style }}
         >
           {column.header || column.label}
         </div>

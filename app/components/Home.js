@@ -39,7 +39,7 @@ export default class Home extends Component {
     return (
       <div>
         <div className={styles.container} data-tid="container">
-          {/*<Link to="/counter">to Counter</Link>*/}
+          <Link to="/create">Create Focus Group</Link>
           <button type="button" onClick={this.onBtnClick}>Import Data</button>
           <ResponseTable
             list={data}
