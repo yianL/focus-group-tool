@@ -1,0 +1,30 @@
+.createGroup {
+  position: relative;
+}
+.createGroup h3 {
+  margin: .5em 0;
+}
+
+.createGroup table {
+  width: 100%;
+}
+
+.createGroup table th:first-child,
+.createGroup table td:first-child {
+  width: 120px;
+  text-align: left;
+}
+
+.createGroup table td {
+  text-align: center;
+}
+
+.countField {
+  width: 4em;
+}
+
+.contraintSet {
+  margin-bottom: 40px;
+}
+
+

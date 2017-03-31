@@ -15,8 +15,8 @@ const constraints = {
 export default class Home extends Component {
   componentWillMount() {
     const { loadDataSet } = this.props;
-    ipcRenderer.on('selected-file', (event, path) => {
-    });
+    // ipcRenderer.on('selected-file', (event, path) => {
+    // });
 
     ipcRenderer.on('file-loaded', (event, data) => {
       loadDataSet(data);
@@ -39,7 +39,6 @@ export default class Home extends Component {
     return (
       <div>
         <div className={styles.container} data-tid="container">
-          <Link to="/create">Create Focus Group</Link>
           <button type="button" onClick={this.onBtnClick}>Import Data</button>
           <ResponseTable
             list={data}
@@ -47,6 +46,7 @@ export default class Home extends Component {
             markAsUnavailable={markAsUnavailable}
             markAsAvailable={markAsAvailable}
           />
+          {data.length > 0 && <Link to="/create">Create Focus Group</Link>}
           {data.length > 0 && (
             <FocusGroupTable
               list={focusGroup}
