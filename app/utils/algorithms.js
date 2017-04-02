@@ -76,21 +76,36 @@ var getFocusGroupSize = ( constraints ) => {
 // a set of constraints.
 // People Array: [ {age: "10-20", ...} ]
 // Constraints Array: [ {category: "age", target: "10-20", count: 4 } ]
-var scoreDataset = ( people, constraints ) => {
+var scoreDataset = ( people, constraints, getOffset=false ) => {
   const group = Object.keys(people).reduce((prev, current) => prev.concat(people[current]), []);
   var score = 0
 
   for (let constraint of constraints) {
-    score += scoreConstraint(group, constraint)
+    score += scoreConstraint(group, constraint, getOffset)
   }
 
   return score
 }
 
+var calculateUnmetCriteria = ( people, constraints ) => {
+  var unmetCriteria = []
+
+  for (let constraint of constraints) {
+    var offset = scoreDataset(people, [ constraint ], true)
+    
+    if ( offset !== 0 ) {
+      constraint.offset = offset
+      unmetCriteria.push(constraint)
+    }
+  }
+
+  return unmetCriteria
+}
+
 
 // Returns the score for a given constraint, this is defined as the difference
 // between actual matches to a category and expected matches.
-var scoreConstraint = ( people, constraint ) => {
+var scoreConstraint = ( people, constraint, getOffset=false ) => {
   var matches = 0
 
   for (let person of people) {
@@ -99,7 +114,8 @@ var scoreConstraint = ( people, constraint ) => {
     }
   }
 
-  return Math.abs(matches - constraint.count)
+  var score = matches - constraint.count
+  return getOffset ? score : Math.abs(score)
 }
 
 // Return true if a person matches the given constraint
@@ -117,4 +133,5 @@ export default {
   scoreConstraint,
   tryPersonInGroup,
   selectFocusGroup,
+  calculateUnmetCriteria,
 };

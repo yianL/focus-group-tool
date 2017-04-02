@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
-import { selectFocusGroup } from '../utils/algorithms';
+import { selectFocusGroup, calculateUnmetCriteria } from '../utils/algorithms';
 import styles from './CreateGroup.css';
 
 export default class CreateGroup extends Component {
@@ -78,8 +78,9 @@ export default class CreateGroup extends Component {
     ), []);
 
     const focusGroup = selectFocusGroup(data, constraintObject, groupSize);
-
     console.log(focusGroup);
+    const unmetCriteria = calculateUnmetCriteria( focusGroup, constraintObject )
+    console.log(unmetCriteria);
   }
 
   handleGroupSizeChange = (event) => {
