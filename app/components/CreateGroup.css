@@ -15,8 +15,22 @@
   text-align: left;
 }
 
+.summaryColumn {
+  width: 60px;
+}
+
 .createGroup table td {
   text-align: center;
+  padding: 5px 10px;
+}
+
+.groupSize {
+  margin-bottom: 40px;
+}
+
+.groupSize input {
+  margin-left: 20px;
+  width: 4em;
 }
 
 .countField {

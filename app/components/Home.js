@@ -46,7 +46,11 @@ export default class Home extends Component {
             markAsUnavailable={markAsUnavailable}
             markAsAvailable={markAsAvailable}
           />
-          {data.length > 0 && <Link to="/create">Create Focus Group</Link>}
+          {data.length > 0 && (
+            <button type="button">
+              <Link to="/create">Create Focus Group</Link>
+            </button>
+          )}
           {data.length > 0 && (
             <FocusGroupTable
               list={focusGroup}
