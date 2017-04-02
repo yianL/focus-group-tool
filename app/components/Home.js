@@ -4,13 +4,8 @@ import { ipcRenderer } from 'electron';
 import { Link } from 'react-router';
 import ResponseTable from './ResponseTable';
 import FocusGroupTable from './FocusGroupTable';
+import { COLUMNS } from '../utils/constants';
 import styles from './Home.css';
-
-const constraints = {
-  education: {},
-  age: {},
-  income: {},
-};
 
 export default class Home extends Component {
   componentWillMount() {
@@ -27,6 +22,21 @@ export default class Home extends Component {
     ipcRenderer.send('open-file-dialog');
   }
 
+  onExportData = () => {
+    const { focusGroup } = this.props;
+    const exportColumns = COLUMNS.slice(1);
+    const focusGroupArray = [
+      exportColumns.map(col => col.header)
+    ];
+
+    focusGroup.forEach((person) => {
+      focusGroupArray.push(exportColumns.map(col => person[col.name]));
+    });
+
+    console.log('export', focusGroupArray);
+    ipcRenderer.send('export-csv', focusGroupArray);
+  }
+
   render() {
     const {
       data,
@@ -35,6 +45,7 @@ export default class Home extends Component {
       removeFromGroup,
       markAsUnavailable,
       markAsAvailable,
+      constraints,
     } = this.props;
     return (
       <div>
@@ -51,6 +62,7 @@ export default class Home extends Component {
               <Link to="/create">Create Focus Group</Link>
             </button>
           )}
+          <button type="button" onClick={this.onExportData}>Export Data</button>
           {data.length > 0 && (
             <FocusGroupTable
               list={focusGroup}

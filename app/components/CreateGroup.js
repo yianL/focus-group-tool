@@ -1,6 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router';
+import { push } from 'react-router-redux';
 import { DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
 import { selectFocusGroup, calculateUnmetCriteria } from '../utils/algorithms';
@@ -65,7 +66,7 @@ export default class CreateGroup extends Component {
   }
 
   handleCreate = () => {
-    const { data, constraints, groupSize } = this.props;
+    const { data, constraints, groupSize, dispatch, addToGroup } = this.props;
 
     const constraintObject = Object.keys(constraints).reduce((prev, current) => (
       prev.concat(
@@ -79,8 +80,15 @@ export default class CreateGroup extends Component {
 
     const focusGroup = selectFocusGroup(data, constraintObject, groupSize);
     console.log(focusGroup);
-    const unmetCriteria = calculateUnmetCriteria( focusGroup, constraintObject )
+    const unmetCriteria = calculateUnmetCriteria(focusGroup, constraintObject);
     console.log(unmetCriteria);
+
+    // set members of the group as selected
+    Object.keys(focusGroup).forEach((key) => {
+      addToGroup(focusGroup[key].id);
+    });
+
+    dispatch(push('/'));
   }
 
   handleGroupSizeChange = (event) => {

@@ -2,6 +2,7 @@
 import fs from 'fs';
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import parse from 'csv-parse';
+import stringify from 'csv-stringify';
 import MenuBuilder from './menu';
 
 let mainWindow = null;
@@ -85,3 +86,32 @@ ipcMain.on('open-file-dialog', (event) =>
     });
   })
 );
+
+ipcMain.on('export-csv', (event, data) => {
+  dialog.showSaveDialog({
+    title: 'Save Focus Group to CSV',
+    defaultPath: 'focusGroup.csv',
+    filters: [{
+      name: 'CSV Files',
+      extensions: ['csv'],
+    }]
+  }, (filename) => {
+    if (!filename) { return; }
+
+    stringify(data, (err, output) => {
+      if (err) {
+        console.error('Error stringifying focus group', err);
+        return;
+      }
+
+      fs.writeFile(filename, output, (error) => {
+        if (error) {
+          console.error('Error writing to file: ', error);
+          return;
+        }
+        
+        console.log('File written:', filename);
+      });
+    });
+  });
+});

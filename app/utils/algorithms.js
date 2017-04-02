@@ -125,7 +125,7 @@ var personFitsConstraint = ( person, constraint ) => {
   var target = constraint.target
   var actual = person[category]
 
-  return (Array.isArray(actual) ? actual[0] : actual).includes(target)
+  return (Array.isArray(actual) ? actual[0] : actual).startsWith(target)
 }
 
 export default {

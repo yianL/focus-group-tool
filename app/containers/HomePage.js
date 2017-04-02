@@ -11,6 +11,7 @@ const getFocusGroup = (state) =>
 const mapStateToProps = (state) => ({
   data: state.candidates.data,
   focusGroup: getFocusGroup(state),
+  constraints: state.focusGroup.constraints,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(CandidateActions, dispatch);

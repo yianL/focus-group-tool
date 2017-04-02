@@ -120,7 +120,7 @@ class FocusGroupTable extends PureComponent {
         key={key}
         style={style}
       >
-        {datum[columnName].includes(column.value) ? 'O' : ''}
+        {datum[columnName].startsWith(column.value) ? 'O' : ''}
       </div>
     );
   }
