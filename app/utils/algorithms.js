@@ -108,3 +108,10 @@ var personFitsConstraint = ( person, constraint ) => {
 
   return (Array.isArray(actual) ? actual[0] : actual) == target
 }
+
+export default {
+  personFitsConstraint,
+  scoreConstraint,
+  tryPersonInGroup,
+  selectFocusGroup,
+};
