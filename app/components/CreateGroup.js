@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
+import { selectFocusGroup } from '../utils/algorithms';
 import styles from './CreateGroup.css';
 
 export default class CreateGroup extends Component {
@@ -63,6 +64,24 @@ export default class CreateGroup extends Component {
     setConstraint(nameAndIndex[0], nameAndIndex[1], valueAsNumber);
   }
 
+  handleCreate = () => {
+    const { data, constraints, groupSize } = this.props;
+
+    const constraintObject = Object.keys(constraints).reduce((prev, current) => (
+      prev.concat(
+        constraints[current].map((count, index) => ({
+          category: current,
+          target: DEMOGRAPHIC_METRICS[current].columns[index].value,
+          count,
+        }))
+      )
+    ), []);
+
+    const focusGroup = selectFocusGroup(data, constraintObject, groupSize);
+
+    console.log(focusGroup);
+  }
+
   handleGroupSizeChange = (event) => {
     const { setGroupSize } = this.props;
     const { valueAsNumber } = event.target;
@@ -103,7 +122,7 @@ export default class CreateGroup extends Component {
           );
         })}
         <button><Link to="/">Cancel</Link></button>
-        <button>Create</button>
+        <button onClick={this.handleCreate}>Create</button>
       </div>
     );
   }

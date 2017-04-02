@@ -1,18 +1,18 @@
-import { getRandomInt } from "helper";
-// Does a simple algorithm: Selects initial people at random then replaces people 
+import { getRandomInt } from './helpers';
+
+// Does a simple algorithm: Selects initial people at random then replaces people
 // to see if they improve the score. It saves the best replacement for each person
-var selectFocusGroup = ( people, constraints) => {
-  let size = getFocusGroupSize(constraints)
+var selectFocusGroup = (people, constraints, size) => {
   if(size > people)
     return null
 
   var focusGroup = grabRandomFocusGroup(people, size)
 
-  for (i=0; i<people.length; i++) {
-    focuGroup = tryPersonInGroup(i, people, focusGroup, constraints)
+  for (var i=0; i<people.length; i++) {
+    focusGroup = tryPersonInGroup(i, people, focusGroup, constraints)
   }
 
-  return focusGroup.values()
+  return focusGroup
 }
 
 // Tries to see if a person is a better fit in the group. Finds its optimal swap
@@ -23,17 +23,17 @@ var tryPersonInGroup = ( id, people, group, constraints ) => {
   // Person is in group already
   if(group[id] != null)
     return group
-  
+
   var minId = null
-  var minScore = scoreDataset(group.values(), constraints)
-  
+  var minScore = scoreDataset(group, constraints)
+
   for (var personId in group) {
     if (group.hasOwnProperty(personId)) {
       var hold = group[personId]
-      group[personId] = people[id]  
+      group[personId] = people[id]
 
       // Try to see score replacing each person
-      var score = scoreDataset(group.values(), constraints)
+      var score = scoreDataset(group, constraints)
       group[personId] = hold
 
       // Find the best replacement
@@ -55,9 +55,9 @@ var tryPersonInGroup = ( id, people, group, constraints ) => {
 // Returns a JS Object with random people using their 'index' as keys to identify them
 var grabRandomFocusGroup = ( people, size ) => {
   var grabbed = {}
-  while(grabbed.length < size) {
+  while(Object.keys(grabbed).length < size) {
     var index = getRandomInt(0, people.length)
-    if(grabbed[index] != null)
+    if (grabbed[index] === undefined)
       grabbed[index] = people[index]
   }
 
@@ -77,24 +77,26 @@ var getFocusGroupSize = ( constraints ) => {
 // People Array: [ {age: "10-20", ...} ]
 // Constraints Array: [ {category: "age", target: "10-20", count: 4 } ]
 var scoreDataset = ( people, constraints ) => {
+  const group = Object.keys(people).reduce((prev, current) => prev.concat(people[current]), []);
   var score = 0
 
   for (let constraint of constraints) {
-    score += scoreConstraint(people, constraint)
+    score += scoreConstraint(group, constraint)
   }
 
   return score
 }
 
 
-// Returns the score for a given constraint, this is defined as the difference 
+// Returns the score for a given constraint, this is defined as the difference
 // between actual matches to a category and expected matches.
 var scoreConstraint = ( people, constraint ) => {
   var matches = 0
 
   for (let person of people) {
-    if personFitsConstraint(person, constraint) 
+    if (personFitsConstraint(person, constraint)) {
       matches++
+    }
   }
 
   return Math.abs(matches - constraint.count)
@@ -105,9 +107,9 @@ var scoreConstraint = ( people, constraint ) => {
 var personFitsConstraint = ( person, constraint ) => {
   var category = constraint.category
   var target = constraint.target
-  var actual = person[category] 
+  var actual = person[category]
 
-  return (Array.isArray(actual) ? actual[0] : actual) == target
+  return (Array.isArray(actual) ? actual[0] : actual).includes(target)
 }
 
 export default {
