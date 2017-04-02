@@ -1,3 +1,4 @@
+import { getRandomInt } from "helper";
 // Does a simple algorithm: Selects initial people at random then replaces people 
 // to see if they improve the score. It saves the best replacement for each person
 var selectFocusGroup = ( people, constraints) => {
