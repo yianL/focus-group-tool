@@ -8,8 +8,10 @@ var selectFocusGroup = (people, constraints, size) => {
 
   var focusGroup = grabRandomFocusGroup(people, size)
 
-  for (var i=0; i<people.length; i++) {
-    focusGroup = tryPersonInGroup(i, people, focusGroup, constraints)
+  for (var tries=0; tries < 20; tries++) {
+    for (var i=0; i<people.length; i++) {
+      focusGroup = tryPersonInGroup(i, people, focusGroup, constraints)
+    }
   }
 
   return focusGroup
