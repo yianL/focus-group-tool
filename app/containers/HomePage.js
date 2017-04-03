@@ -12,6 +12,7 @@ const mapStateToProps = (state) => ({
   data: state.candidates.data,
   focusGroup: getFocusGroup(state),
   constraints: state.focusGroup.constraints,
+  mismatches: state.focusGroup.mismatches,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(CandidateActions, dispatch);

@@ -2,6 +2,7 @@
 import {
   SET_GROUP_SIZE,
   SET_CONSTRAINT,
+  SET_MISMATCHES,
 } from '../actions/focusGroup';
 import {
   DEMOGRAPHIC_METRICS,
@@ -10,6 +11,7 @@ import {
 const InitialState = {
   groupSize: 15,
   constraints: {},
+  mismatches: [],
 };
 
 export default function candidates(state = InitialState, action) {
@@ -37,6 +39,15 @@ export default function candidates(state = InitialState, action) {
       return {
         ...state,
         constraints: newConstraints,
+      };
+    }
+
+    case SET_MISMATCHES: {
+      const { mismatches } = action.payload;
+
+      return {
+        ...state,
+        mismatches: mismatches.filter(m => m.count > 0),
       };
     }
 

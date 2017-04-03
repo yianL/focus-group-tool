@@ -66,7 +66,14 @@ export default class CreateGroup extends Component {
   }
 
   handleCreate = () => {
-    const { data, constraints, groupSize, dispatch, addToGroup } = this.props;
+    const { 
+      data, 
+      constraints, 
+      groupSize, 
+      dispatch, 
+      addToGroup,
+      setMismatches,
+    } = this.props;
 
     const constraintObject = Object.keys(constraints).reduce((prev, current) => (
       prev.concat(
@@ -79,9 +86,7 @@ export default class CreateGroup extends Component {
     ), []);
 
     const focusGroup = selectFocusGroup(data, constraintObject, groupSize);
-    console.log(focusGroup);
     const unmetCriteria = calculateUnmetCriteria(focusGroup, constraintObject);
-    console.log(unmetCriteria);
     const accuracy = getAccuracyOfFocusGroup(focusGroup, constraintObject);
     console.log(accuracy);
 
@@ -89,6 +94,8 @@ export default class CreateGroup extends Component {
     Object.keys(focusGroup).forEach((key) => {
       addToGroup(focusGroup[key].id);
     });
+
+    setMismatches(unmetCriteria);
 
     dispatch(push('/'));
   }

@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import ResponseTable from './ResponseTable';
 import FocusGroupTable from './FocusGroupTable';
 import { COLUMNS } from '../utils/constants';
+import { capitalize } from '../utils/helpers';
 import styles from './Home.css';
 
 export default class Home extends Component {
@@ -46,6 +47,7 @@ export default class Home extends Component {
       markAsUnavailable,
       markAsAvailable,
       constraints,
+      mismatches,
     } = this.props;
     return (
       <div>
@@ -63,6 +65,17 @@ export default class Home extends Component {
             </button>
           )}
           <button type="button" onClick={this.onExportData}>Export Data</button>
+          {mismatches.length > 0 && (
+            <div>
+              <ul>
+                {mismatches.map((mismatch) => (
+                  <li>
+                    {`${capitalize(mismatch.category)} ${mismatch.target} (${mismatch.count + mismatch.offset}/${mismatch.count})`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {data.length > 0 && (
             <FocusGroupTable
               list={focusGroup}
