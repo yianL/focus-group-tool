@@ -15,6 +15,14 @@ var selectFocusGroup = (people, constraints, size) => {
   return focusGroup
 }
 
+var getAccuracyOfFocusGroup = ( group, constraints ) => {
+  const score = scoreDataset( group, constraints );
+
+  const constraintBounds = getConstraintBounds(constraints);
+
+  return ((constraintBounds - score) / constraintBounds * 100)+'%';
+}
+
 // Tries to see if a person is a better fit in the group. Finds its optimal swap
 // and replaces that person. If no swap, it returns the same group.
 //
@@ -64,7 +72,7 @@ var grabRandomFocusGroup = ( people, size ) => {
   return grabbed
 }
 
-var getFocusGroupSize = ( constraints ) => {
+var getConstraintBounds = ( constraints ) => {
   var size = 0
   for (let constraint of constraints)
     size += constraint.count
@@ -134,4 +142,5 @@ export default {
   tryPersonInGroup,
   selectFocusGroup,
   calculateUnmetCriteria,
+  getAccuracyOfFocusGroup,
 };

@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { push } from 'react-router-redux';
 import { DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
-import { selectFocusGroup, calculateUnmetCriteria } from '../utils/algorithms';
+import { selectFocusGroup, calculateUnmetCriteria, getAccuracyOfFocusGroup } from '../utils/algorithms';
 import styles from './CreateGroup.css';
 
 export default class CreateGroup extends Component {
@@ -82,6 +82,8 @@ export default class CreateGroup extends Component {
     console.log(focusGroup);
     const unmetCriteria = calculateUnmetCriteria(focusGroup, constraintObject);
     console.log(unmetCriteria);
+    const accuracy = getAccuracyOfFocusGroup(focusGroup, constraintObject);
+    console.log(accuracy);
 
     // set members of the group as selected
     Object.keys(focusGroup).forEach((key) => {
