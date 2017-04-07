@@ -31,7 +31,7 @@ export default function candidates(state = InitialState, action) {
 
       if (!newConstraints[name]) {
         newConstraints[name] = new Array(DEMOGRAPHIC_METRICS[name].columns.length);
-        newConstraints[name].fill(0);
+        newConstraints[name].fill(undefined);
       }
 
       newConstraints[name][index] = amount;
@@ -47,7 +47,7 @@ export default function candidates(state = InitialState, action) {
 
       return {
         ...state,
-        mismatches: mismatches.filter(m => m.count > 0),
+        mismatches,
       };
     }
 

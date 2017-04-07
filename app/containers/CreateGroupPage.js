@@ -4,9 +4,13 @@ import { connect } from 'react-redux';
 import CreateGroup from '../components/CreateGroup';
 import * as FocusGroupActions from '../actions/focusGroup';
 import * as CandidateActions from '../actions/candidates';
+import { STATES } from '../utils/constants';
+
+const availableCandidates = (state) =>
+  state.candidates.data.filter(candidate => candidate.state !== STATES.UNAVAILABLE);
 
 const mapStateToProps = (state) => ({
-  data: state.candidates.data,
+  data: availableCandidates(state),
   groupSize: state.focusGroup.groupSize,
   constraints: state.focusGroup.constraints,
 });

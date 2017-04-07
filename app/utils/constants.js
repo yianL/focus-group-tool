@@ -98,8 +98,6 @@ const COLUMNS = [
   { header: 'Email', width: WIDTH.long, name: 'email' },
   { header: 'Participated in a focus group', width: WIDTH.boolean, name: 'participatedInFocusGroup' },
   { header: 'What kind', width: WIDTH.short, name: 'focusGroupKind' },
-  { header: 'Participated in a jury research project', width: WIDTH.boolean, name: 'participatedInJuryProject' },
-  { header: 'Availability', width: WIDTH.medium, name: 'availability' },
   { header: 'Hear well', width: WIDTH.boolean, name: 'hear' },
   { header: 'Read and write', width: WIDTH.boolean, name: 'readWrite' },
   { header: 'See well enough', width: WIDTH.boolean, name: 'see' },
@@ -111,6 +109,7 @@ const COLUMNS = [
   { header: 'California driver\'s license', width: WIDTH.boolean, name: 'californiaDL' },
   /* START demographic metrics */
   { header: 'Education', width: WIDTH.long, name: 'education' },
+  { header: 'Participated in a jury research project', width: WIDTH.boolean, name: 'participatedInJuryProject' },
   { header: 'Age', width: WIDTH.short, name: 'age' },
   { header: 'Ethnicity', width: WIDTH.medium, name: 'ethnicity' },
   { header: 'Gender', width: WIDTH.boolean, name: 'gender' },
@@ -127,6 +126,7 @@ const COLUMNS = [
   { header: 'There are too many lawsuits', width: WIDTH.boolean, name: 'lawsuits' },
   { header: 'Jury awards are too large', width: WIDTH.boolean, name: 'juryAwards' },
   { header: 'Lawsuits cost us all too much', width: WIDTH.boolean, name: 'lawsuitsCostly' },
+  { header: 'Availability', width: WIDTH.medium, name: 'availability' },
 ];
 
 export default {

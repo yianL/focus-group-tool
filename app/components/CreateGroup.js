@@ -13,15 +13,15 @@ export default class CreateGroup extends Component {
     const { constraints, groupSize } = this.props;
     const { columns } = DEMOGRAPHIC_METRICS[key];
     const constraint = constraints[key] || [];
-    const sum = constraint.reduce((prev, current) => prev + current, 0);
+    const sum = constraint.reduce((prev, current) => isNaN(current) ? prev : prev + current, 0);
 
     return (
       <table>
         <thead>
           <tr>
-            <th></th>
+            <th />
             {columns.map((col) => (
-              <th>{col.value}</th>
+              <th key={col.value}>{col.value}</th>
             ))}
             <th className={styles.summaryColumn}>Total</th>
           </tr>
@@ -30,7 +30,7 @@ export default class CreateGroup extends Component {
           <tr>
             <td>Count</td>
             {columns.map((col, index) => (
-              <td>
+              <td key={`${col.name}|${index}`}>
                 <input
                   className={styles.countField}
                   type="number"
@@ -47,7 +47,7 @@ export default class CreateGroup extends Component {
           <tr>
             <td>Percentile</td>
             {columns.map((_, index) => (
-              <td>
+              <td key={index}>
                 {isNaN(constraint[index]) ? '--' : `${(constraint[index] * 100 / groupSize).toFixed(1)}%`}
               </td>
             ))}
@@ -66,11 +66,11 @@ export default class CreateGroup extends Component {
   }
 
   handleCreate = () => {
-    const { 
-      data, 
-      constraints, 
-      groupSize, 
-      dispatch, 
+    const {
+      data,
+      constraints,
+      groupSize,
+      dispatch,
       addToGroup,
       setMismatches,
     } = this.props;
@@ -83,12 +83,13 @@ export default class CreateGroup extends Component {
           count,
         }))
       )
-    ), []);
+    ), [])
+    .filter(constraint => !isNaN(constraint.count));
 
     const focusGroup = selectFocusGroup(data, constraintObject, groupSize);
     const unmetCriteria = calculateUnmetCriteria(focusGroup, constraintObject);
     const accuracy = getAccuracyOfFocusGroup(focusGroup, constraintObject);
-    console.log(accuracy);
+    console.log('Group created, accuracy:', accuracy);
 
     // set members of the group as selected
     Object.keys(focusGroup).forEach((key) => {
@@ -116,7 +117,7 @@ export default class CreateGroup extends Component {
       <div className={styles.createGroup}>
         <h2>
           <Link to="/">
-            <i className="fa fa-chevron-circle-left fa-fw" ariaHidden="true" />
+            <i className="fa fa-chevron-circle-left fa-fw" />
           </Link>
           Create Focus Group
         </h2>

@@ -3,12 +3,12 @@ import { getRandomInt } from './helpers';
 // Does a simple algorithm: Selects initial people at random then replaces people
 // to see if they improve the score. It saves the best replacement for each person
 var selectFocusGroup = (people, constraints, size) => {
-  if(size > people)
-    return null
+  if(size > people.length)
+    return people
 
   var focusGroup = grabRandomFocusGroup(people, size)
 
-  for (var tries=0; tries < 20; tries++) {
+  for (var tries=0; tries < 4; tries++) {
     for (var i=0; i<people.length; i++) {
       focusGroup = tryPersonInGroup(i, people, focusGroup, constraints)
     }
@@ -102,7 +102,7 @@ var calculateUnmetCriteria = ( people, constraints ) => {
 
   for (let constraint of constraints) {
     var offset = scoreDataset(people, [ constraint ], true)
-    
+
     if ( offset !== 0 ) {
       constraint.offset = offset
       unmetCriteria.push(constraint)
