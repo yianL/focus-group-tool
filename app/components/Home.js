@@ -4,6 +4,7 @@ import { ipcRenderer } from 'electron';
 import { Link } from 'react-router';
 import ResponseTable from './ResponseTable';
 import FocusGroupTable from './FocusGroupTable';
+import ActiveFilters from './ActiveFilters';
 import { COLUMNS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
 import styles from './Home.css';
@@ -44,20 +45,32 @@ export default class Home extends Component {
       focusGroup,
       addToGroup,
       removeFromGroup,
+      addFilter,
+      removeFilter,
       markAsUnavailable,
       markAsAvailable,
       constraints,
       mismatches,
+      filters,
+      filterOptions,
     } = this.props;
     return (
       <div>
         <div className={styles.container} data-tid="container">
           <button type="button" onClick={this.onBtnClick}>Import Data</button>
+          <ActiveFilters
+            filters={filters}
+            removeFilter={removeFilter}
+          />
           <ResponseTable
             list={data}
             addToGroup={addToGroup}
             markAsUnavailable={markAsUnavailable}
             markAsAvailable={markAsAvailable}
+            addFilter={addFilter}
+            removeFilter={removeFilter}
+            filters={filters}
+            filterOptions={filterOptions}
           />
           {data.length > 0 && (
             <button type="button">

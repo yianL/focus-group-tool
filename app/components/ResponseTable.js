@@ -2,7 +2,9 @@
  * @flow
  */
 import React, { PropTypes, PureComponent } from 'react';
+import cn from 'classnames';
 import { AutoSizer, MultiGrid } from 'react-virtualized';
+import Modal from 'react-modal';
 import { COLUMNS, STATES } from '../utils/constants';
 import styles from './ResponseTable.css';
 
@@ -24,17 +26,101 @@ const STYLE_TOP_RIGHT_GRID = {
   fontWeight: 'bold'
 };
 
+const STYLE_MODAL = {
+  content: {
+    top: undefined,
+    bottom: undefined,
+    left: undefined,
+    right: undefined,
+    position: 'relative',
+    border: '1px solid rgb(204, 204, 204)',
+    background: 'rgb(255, 255, 255)',
+    overflow: 'auto',
+    borderRadius: '4px',
+    outline: 'none',
+    padding: '20px',
+    width: '360px',
+    margin: '50px auto',
+  }
+};
+
+const InitialState = {
+  showModal: false,
+  activeColumn: {},
+  selectedFilters: [],
+};
+
 class ResponseTable extends PureComponent {
   static propTypes = {
     list: PropTypes.arrayOf(PropTypes.any).isRequired,
   }
 
+  constructor(props) {
+    super(props);
+    this.state = InitialState;
+  }
+  
   getColumnWidth = ({ index }) => COLUMNS[index].width;
+  
+  getSearchInputRef = ref => { this.searchInput = ref; }
+
+  handleApplyFilter = () => {
+    const { addFilter, removeFilter, filterOptions } = this.props;
+    const { name, filter, search } = this.state.activeColumn;
+
+    if (search) {
+      const value = this.searchInput.value;
+
+      this.setState(InitialState, () => {
+        if (value) {
+          addFilter(name, value);
+        } else {
+          removeFilter(name);
+        }
+      });
+    } else if (filter) {
+      const { selectedFilters } = this.state;
+      
+      this.setState(InitialState, () => {
+        if (selectedFilters.length === filterOptions[name].length) {
+          removeFilter(name);
+        } else {
+          addFilter(name, selectedFilters);
+        }
+      });
+    }
+  }
+  
+  handleCloseModal = () => this.setState(InitialState);
+
+  handleOpenModal = (column) => {
+    const { filters, filterOptions } = this.props;
+    const activeFilter = filters.filter(f => f.name === column.name)[0];
+    const selectedFilters = (activeFilter && activeFilter.value) || 
+      filterOptions[column.name] || [];
+    
+    this.setState({ 
+      showModal: true, 
+      activeColumn: column,
+      selectedFilters,
+    }, () => {
+      if (this.searchInput) {
+        const { activeColumn } = this.state;
+        const filter = filters.filter(f => f.name === activeColumn.name)[0];
+        
+        this.searchInput.focus();
+        if (filter) {
+          this.searchInput.value = filter.value;
+        }
+      }
+    });
+  }
 
   cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
     const {
       list,
     } = this.props;
+    const column = COLUMNS[columnIndex];
 
     if (rowIndex === 0) {
       return (
@@ -43,14 +129,22 @@ class ResponseTable extends PureComponent {
           key={key}
           style={style}
         >
-          {COLUMNS[columnIndex].header}
+          {column.header}
+          {(column.search || column.filter) && (
+            <button
+              type="button"
+              onClick={() => this.handleOpenModal(column)}
+            >
+              O
+            </button>
+          )}
         </div>
       );
     }
 
     const id = rowIndex - 1;
     const datum = list[id];
-    const columnName = COLUMNS[columnIndex].name;
+    const columnName = column.name;
 
     if (columnIndex === 0) {
       const { addToGroup, markAsUnavailable, markAsAvailable } = this.props;
@@ -100,9 +194,45 @@ class ResponseTable extends PureComponent {
     );
   }
 
+  toggleFilterOption = (e) => {
+    const value = e.target.textContent;
+    const { selectedFilters } = this.state;
+    
+    if (selectedFilters.includes(value)) {
+      this.setState({
+        selectedFilters: selectedFilters.filter(f => f !== value),
+      });
+    } else {
+      this.setState({
+        selectedFilters: selectedFilters.concat(value),
+      });      
+    }
+  }
+
+  renderFilterOptions = () => {
+    const { filterOptions } = this.props;
+    const { activeColumn, selectedFilters } = this.state;
+    const options = filterOptions[activeColumn.name];
+
+    return (
+      <ul>
+        {options.map(option => (
+          <li onClick={this.toggleFilterOption}>
+            <i className={cn(
+              'fa fa-fw', 
+              selectedFilters.includes(option) ? 'fa-check' : 'fa-minus'
+            )} />
+            {option}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   render() {
     const { list } = this.props;
-
+    const { showModal, activeColumn } = this.state;
+    
     return (
       <div className={styles.list}>
         {list.length === 0 && (
@@ -132,6 +262,22 @@ class ResponseTable extends PureComponent {
             )}
           </AutoSizer>
         )}
+
+        <Modal
+          isOpen={showModal}
+          style={STYLE_MODAL}
+          contentLabel="Minimal Modal Example"
+        >
+          <div className={styles.filterModal}>
+            <h3>{activeColumn.header}</h3>
+            {activeColumn.search && (
+              <input name="search" ref={this.getSearchInputRef} />
+            )}
+            {activeColumn.filter && this.renderFilterOptions()}
+            <button onClick={this.handleCloseModal}>Cancel</button>
+            <button onClick={this.handleApplyFilter}>Apply</button>
+          </div>
+        </Modal>
       </div>
     );
   }

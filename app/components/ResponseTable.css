@@ -31,3 +31,7 @@
   border-right: 1px solid #eee;
   height: 40px !important;
 }
+
+.filterModal {
+  color: black;
+}
