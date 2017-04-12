@@ -74,6 +74,7 @@ export default class Home extends Component {
           <ResponseTable
             list={data}
             addToGroup={addToGroup}
+            activeGroup={activeGroup}
             markAsUnavailable={markAsUnavailable}
             markAsAvailable={markAsAvailable}
             addFilter={addFilter}

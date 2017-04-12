@@ -147,7 +147,12 @@ class ResponseTable extends PureComponent {
     const columnName = column.name;
 
     if (columnIndex === 0) {
-      const { addToGroup, markAsUnavailable, markAsAvailable } = this.props;
+      const { 
+        addToGroup, 
+        markAsUnavailable, 
+        markAsAvailable, 
+        activeGroup 
+      } = this.props;
 
       return (
         <div
@@ -155,10 +160,10 @@ class ResponseTable extends PureComponent {
           key={key}
           style={style}
         >
-          {datum.state !== STATES.UNAVAILABLE && (
+          {datum.state === STATES.DEFAULT && activeGroup && (
             <button
               type="button"
-              onClick={() => addToGroup(datum.id)}
+              onClick={() => addToGroup(datum.id, activeGroup)}
             >
               +
             </button>
