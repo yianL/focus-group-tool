@@ -3,7 +3,7 @@ import { getRandomInt } from './helpers';
 // Does a simple algorithm: Selects initial people at random then replaces people
 // to see if they improve the score. It saves the best replacement for each person
 var selectFocusGroup = (people, constraints, size) => {
-  if(size > people.length)
+  if(size >= people.length)
     return people
 
   var focusGroup = grabRandomFocusGroup(people, size)

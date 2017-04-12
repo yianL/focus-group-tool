@@ -12,9 +12,9 @@ export const loadDataSet = (data) => ({
   payload: { data },
 });
 
-export const addToGroup = (id) => ({
+export const addToGroup = (id, session) => ({
   type: ADD_TO_GROUP,
-  payload: { id },
+  payload: { id, session },
 });
 
 export const markAsUnavailable = (id) => ({

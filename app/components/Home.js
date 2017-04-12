@@ -1,5 +1,6 @@
 // @flow
 import React, { Component } from 'react';
+import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import { Link } from 'react-router';
 import ResponseTable from './ResponseTable';
@@ -39,10 +40,18 @@ export default class Home extends Component {
     ipcRenderer.send('export-csv', focusGroupArray);
   }
 
+  handleSelectActiveGroup = (e) => {
+    const value = e.target.textContent;
+    const { setActiveGroup } = this.props;
+    setActiveGroup(value);
+  }
+
   render() {
     const {
       data,
       focusGroup,
+      focusGroups,
+      activeGroup,
       addToGroup,
       removeFromGroup,
       addFilter,
@@ -88,6 +97,19 @@ export default class Home extends Component {
                 ))}
               </ul>
             </div>
+          )}
+          {focusGroups.length > 0 && (
+            <ul>
+              {focusGroups.map(f => (
+                <li
+                  key={f}
+                  className={classNames(activeGroup === f ? styles.isActive : undefined)}
+                  onClick={this.handleSelectActiveGroup}
+                >
+                  {f}
+                </li>
+              ))}
+            </ul>
           )}
           {data.length > 0 && (
             <FocusGroupTable

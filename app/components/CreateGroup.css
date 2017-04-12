@@ -33,6 +33,10 @@
   width: 4em;
 }
 
+.groupSize select {
+  margin-left: 20px;
+}
+
 .countField {
   width: 4em;
 }

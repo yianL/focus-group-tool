@@ -4,3 +4,7 @@
 .container h2 {
   font-size: 5rem;
 }
+
+ul li.isActive {
+  color: red;
+}

@@ -7,17 +7,19 @@ import * as CandidateActions from '../actions/candidates';
 import { STATES } from '../utils/constants';
 
 const availableCandidates = (state) =>
-  state.candidates.data.filter(candidate => candidate.state !== STATES.UNAVAILABLE);
+  state.candidates.data.filter(candidate => candidate.state === STATES.DEFAULT);
 
 const mapStateToProps = (state) => ({
   data: availableCandidates(state),
+  filterOptions: state.candidates.filterOptions,
+  session: state.focusGroup.session,
   groupSize: state.focusGroup.groupSize,
   constraints: state.focusGroup.constraints,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   ...bindActionCreators(FocusGroupActions, dispatch),
-  addToGroup: (id) => dispatch(CandidateActions.addToGroup(id)),
+  addToGroup: (id, session) => dispatch(CandidateActions.addToGroup(id, session)),
   dispatch
 });
 

@@ -58,11 +58,11 @@ export default function candidates(state = InitialState, action) {
 
     case ADD_TO_GROUP: {
       const data = [...state.data];
-      const { id } = action.payload;
+      const { id, session } = action.payload;
       
       data[id] = {
         ...state.data[id],
-        state: STATES.CHOSEN,
+        state: `${STATES.CHOSEN}-${session}`,
       };
       
       return {

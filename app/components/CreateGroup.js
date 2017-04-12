@@ -69,9 +69,11 @@ export default class CreateGroup extends Component {
     const {
       data,
       constraints,
+      session,
       groupSize,
       dispatch,
       addToGroup,
+      createGroup,
       setMismatches,
     } = this.props;
 
@@ -93,10 +95,12 @@ export default class CreateGroup extends Component {
 
     // set members of the group as selected
     Object.keys(focusGroup).forEach((key) => {
-      addToGroup(focusGroup[key].id);
+      console.log(focusGroup[key].id, session);
+      addToGroup(focusGroup[key].id, session);
     });
 
     setMismatches(unmetCriteria);
+    createGroup(session);
 
     dispatch(push('/'));
   }
@@ -108,9 +112,18 @@ export default class CreateGroup extends Component {
     setGroupSize(valueAsNumber);
   }
 
+  handleSessionChange = (event) => {
+    const { setSession } = this.props;
+    const { value } = event.target;
+
+    setSession(value);
+  }
+
   render() {
     const {
       groupSize,
+      session,
+      filterOptions: { availability },
     } = this.props;
 
     return (
@@ -130,6 +143,21 @@ export default class CreateGroup extends Component {
               value={groupSize}
               onChange={this.handleGroupSizeChange}
             />
+          </h3>
+        </div>
+        <div className={styles.groupSize}>
+          <h3>
+            Session:
+            <select
+              name="session"
+              value={session}
+              onChange={this.handleSessionChange}
+            >
+              <option disabled selected value=""> -- Select a session -- </option>
+              {availability && availability.map(o => (
+                <option value={o}>{o}</option>
+              ))}
+            </select>
           </h3>
         </div>
         {Object.keys(DEMOGRAPHIC_METRICS).map((key) => {
