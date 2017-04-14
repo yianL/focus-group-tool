@@ -87,6 +87,46 @@ ipcMain.on('open-file-dialog', (event) =>
   })
 );
 
+ipcMain.on('open-load-dialog', (event) =>
+  dialog.showOpenDialog({
+    properties: ['openFile']
+  }, (files) => {
+    if (!files || files.length < 1 || !files[0].endsWith('.json')) { return; }
+
+    fs.readFile(files[0], 'utf8', (err, data) => {
+      if (err) throw err;
+      try {
+        const appState = JSON.parse(data);
+        event.sender.send('state-loaded', appState);
+      } catch (e) {
+        console.error('Error parsing application state JSON', e);
+      }
+    });
+  })
+);
+
+ipcMain.on('open-save-dialog', (event, data) =>
+  dialog.showSaveDialog({
+    title: 'Save application state',
+    defaultPath: 'focusGroupState.json',
+    filters: [{
+      name: 'Json Files',
+      extensions: ['json'],
+    }]
+  }, (filename) => {
+    if (!filename) { return; }
+    const appState = JSON.stringify(data);
+    fs.writeFile(filename, appState, (error) => {
+      if (error) {
+        console.error('Error writing to file: ', error);
+        return;
+      }
+
+      console.log('File written:', filename);
+    });
+  })
+);
+
 ipcMain.on('export-csv', (event, data) => {
   dialog.showSaveDialog({
     title: 'Save Focus Group to CSV',

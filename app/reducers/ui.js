@@ -1,6 +1,7 @@
 // @flow
 import {
   SET_ACTIVE_GROUP,
+  LOAD_STATE,
 } from '../actions/ui';
 import {
   CREATE_GROUP,
@@ -29,6 +30,11 @@ export default function candidates(state = InitialState, action) {
         ...state,
         activeGroup: session,
       };
+    }
+
+    case LOAD_STATE: {
+      const { appState } = action.payload;
+      return appState.ui;
     }
 
     default:

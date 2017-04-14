@@ -8,6 +8,7 @@ import {
   ADD_FILTER,
   REMOVE_FILTER,
 } from '../actions/candidates';
+import { LOAD_STATE } from '../actions/ui';
 import { COLUMNS, STATES } from '../utils/constants';
 
 const InitialState = {
@@ -59,43 +60,43 @@ export default function candidates(state = InitialState, action) {
     case ADD_TO_GROUP: {
       const data = [...state.data];
       const { id, session } = action.payload;
-      
+
       data[id] = {
         ...state.data[id],
         state: `${STATES.CHOSEN}-${session}`,
       };
-      
+
       return {
         ...state,
         data,
       };
     }
-    
+
     case MARK_AS_AVAILABLE:
     case REMOVE_FROM_GROUP: {
       const data = [...state.data];
       const { id } = action.payload;
-      
+
       data[id] = {
         ...state.data[id],
         state: STATES.DEFAULT,
       };
-      
+
       return {
         ...state,
         data,
       };
     }
-    
+
     case MARK_AS_UNAVAILABLE: {
       const data = [...state.data];
       const { id } = action.payload;
-      
+
       data[id] = {
         ...state.data[id],
         state: STATES.UNAVAILABLE,
       };
-      
+
       return {
         ...state,
         data,
@@ -114,11 +115,16 @@ export default function candidates(state = InitialState, action) {
 
     case REMOVE_FILTER: {
       const { name } = action.payload;
-            
+
       return {
         ...state,
         filters: state.filters.filter(f => f.name !== name),
       };
+    }
+
+    case LOAD_STATE: {
+      const { appState } = action.payload;
+      return appState.candidates;
     }
 
     default:

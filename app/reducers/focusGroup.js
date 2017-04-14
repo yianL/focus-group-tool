@@ -6,6 +6,7 @@ import {
   SET_MISMATCHES,
   CREATE_GROUP,
 } from '../actions/focusGroup';
+import { LOAD_STATE } from '../actions/ui';
 import {
   DEMOGRAPHIC_METRICS,
 } from '../utils/constants';
@@ -75,6 +76,11 @@ export default function candidates(state = InitialState, action) {
         ...state,
         mismatches,
       };
+    }
+
+    case LOAD_STATE: {
+      const { appState } = action.payload;
+      return appState.focusGroup;
     }
 
     default:

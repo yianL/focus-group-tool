@@ -1,5 +1,5 @@
 // @flow
-import React, { Component } from 'react';
+import React, { PropTypes, Component } from 'react';
 import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import { Link } from 'react-router';
@@ -11,18 +11,32 @@ import { capitalize } from '../utils/helpers';
 import styles from './Home.css';
 
 export default class Home extends Component {
-  componentWillMount() {
-    const { loadDataSet } = this.props;
-    // ipcRenderer.on('selected-file', (event, path) => {
-    // });
+  static contextTypes = {
+    store: PropTypes.any,
+  };
 
+  componentWillMount() {
+    const { loadDataSet, loadState } = this.props;
     ipcRenderer.on('file-loaded', (event, data) => {
       loadDataSet(data);
     });
+
+    ipcRenderer.on('state-loaded', (event, state) => {
+      loadState(state);
+    });
   }
 
-  onBtnClick() {
+  onImportButtonClick = () => {
     ipcRenderer.send('open-file-dialog');
+  }
+
+  onLoadButtonClick = () => {
+    ipcRenderer.send('open-load-dialog');
+  }
+
+  onSaveButtonClick = () => {
+    const { store } = this.context;
+    ipcRenderer.send('open-save-dialog', store.getState());
   }
 
   onExportData = () => {
@@ -86,7 +100,9 @@ export default class Home extends Component {
     return (
       <div>
         <div className={styles.container} data-tid="container">
-          <button type="button" onClick={this.onBtnClick}>Import Data</button>
+          <button type="button" onClick={this.onImportButtonClick}>Import Data</button>
+          <button type="button" onClick={this.onLoadButtonClick}>Load</button>
+          <button type="button" onClick={this.onSaveButtonClick}>Save</button>
           <ActiveFilters
             filters={filters}
             removeFilter={removeFilter}
