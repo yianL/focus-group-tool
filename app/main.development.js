@@ -48,7 +48,7 @@ app.on('ready', async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
+    width: 1200,
     height: 800
   });
 
@@ -109,7 +109,7 @@ ipcMain.on('export-csv', (event, data) => {
           console.error('Error writing to file: ', error);
           return;
         }
-        
+
         console.log('File written:', filename);
       });
     });

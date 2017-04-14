@@ -59,9 +59,9 @@ class ResponseTable extends PureComponent {
     super(props);
     this.state = InitialState;
   }
-  
+
   getColumnWidth = ({ index }) => COLUMNS[index].width;
-  
+
   getSearchInputRef = ref => { this.searchInput = ref; }
 
   handleApplyFilter = () => {
@@ -80,7 +80,7 @@ class ResponseTable extends PureComponent {
       });
     } else if (filter) {
       const { selectedFilters } = this.state;
-      
+
       this.setState(InitialState, () => {
         if (selectedFilters.length === filterOptions[name].length) {
           removeFilter(name);
@@ -90,24 +90,24 @@ class ResponseTable extends PureComponent {
       });
     }
   }
-  
+
   handleCloseModal = () => this.setState(InitialState);
 
   handleOpenModal = (column) => {
     const { filters, filterOptions } = this.props;
     const activeFilter = filters.filter(f => f.name === column.name)[0];
-    const selectedFilters = (activeFilter && activeFilter.value) || 
+    const selectedFilters = (activeFilter && activeFilter.value) ||
       filterOptions[column.name] || [];
-    
-    this.setState({ 
-      showModal: true, 
+
+    this.setState({
+      showModal: true,
       activeColumn: column,
       selectedFilters,
     }, () => {
       if (this.searchInput) {
         const { activeColumn } = this.state;
         const filter = filters.filter(f => f.name === activeColumn.name)[0];
-        
+
         this.searchInput.focus();
         if (filter) {
           this.searchInput.value = filter.value;
@@ -129,7 +129,9 @@ class ResponseTable extends PureComponent {
           key={key}
           style={style}
         >
-          {column.header}
+          <div className={styles.headerDiv}>
+            {column.header}
+          </div>
           {(column.search || column.filter) && (
             <button
               type="button"
@@ -147,11 +149,11 @@ class ResponseTable extends PureComponent {
     const columnName = column.name;
 
     if (columnIndex === 0) {
-      const { 
-        addToGroup, 
-        markAsUnavailable, 
-        markAsAvailable, 
-        activeGroup 
+      const {
+        addToGroup,
+        markAsUnavailable,
+        markAsAvailable,
+        activeGroup
       } = this.props;
 
       return (
@@ -202,7 +204,7 @@ class ResponseTable extends PureComponent {
   toggleFilterOption = (e) => {
     const value = e.target.textContent;
     const { selectedFilters } = this.state;
-    
+
     if (selectedFilters.includes(value)) {
       this.setState({
         selectedFilters: selectedFilters.filter(f => f !== value),
@@ -210,7 +212,7 @@ class ResponseTable extends PureComponent {
     } else {
       this.setState({
         selectedFilters: selectedFilters.concat(value),
-      });      
+      });
     }
   }
 
@@ -220,11 +222,11 @@ class ResponseTable extends PureComponent {
     const options = filterOptions[activeColumn.name];
 
     return (
-      <ul>
+      <ul className={styles.filters}>
         {options.map(option => (
           <li onClick={this.toggleFilterOption}>
             <i className={cn(
-              'fa fa-fw', 
+              'fa fa-fw',
               selectedFilters.includes(option) ? 'fa-check' : 'fa-minus'
             )} />
             {option}
@@ -235,14 +237,17 @@ class ResponseTable extends PureComponent {
   }
 
   render() {
-    const { list } = this.props;
+    const { list, filters } = this.props;
     const { showModal, activeColumn } = this.state;
-    
+
     return (
       <div className={styles.list}>
         {list.length === 0 && (
           <div className={styles.noRows}>
-            No rows
+            {filters.length > 0
+              ? 'No data: try disabling some filters to show more data'
+              : 'No data: try importing a response CSV file'
+            }
           </div>
         )}
         {list.length > 0 && (

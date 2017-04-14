@@ -1,5 +1,6 @@
 {
-  "javascript.validate.enable": false,
+  "javascript.validate.enable": true,
+  "flow.enabled": false,
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,

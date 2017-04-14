@@ -46,6 +46,26 @@ export default class Home extends Component {
     setActiveGroup(value);
   }
 
+  renderMismatches = () => {
+    const { addFilter, mismatches } = this.props;
+
+    return (
+      <ul className={styles.mismatchList}>
+        {mismatches.map((mismatch) => {
+          const { category, target, count, offset } = mismatch;
+          return (
+            <li
+              key={`${category}-${target}`}
+              onClick={() => addFilter(category, target)}
+            >
+              {`${capitalize(category)} ${target} (${count + offset}/${count})`}
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
   render() {
     const {
       data,
@@ -88,17 +108,7 @@ export default class Home extends Component {
             </button>
           )}
           <button type="button" onClick={this.onExportData}>Export Data</button>
-          {mismatches.length > 0 && (
-            <div>
-              <ul>
-                {mismatches.map((mismatch) => (
-                  <li>
-                    {`${capitalize(mismatch.category)} ${mismatch.target} (${mismatch.count + mismatch.offset}/${mismatch.count})`}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {mismatches.length > 0 && this.renderMismatches()}
           {focusGroups.length > 0 && (
             <ul>
               {focusGroups.map(f => (

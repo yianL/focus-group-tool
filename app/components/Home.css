@@ -8,3 +8,11 @@
 ul li.isActive {
   color: red;
 }
+
+.mismatchList li {
+  cursor: pointer;
+}
+
+.mismatchList li:hover {
+  text-decoration: underline;
+}
