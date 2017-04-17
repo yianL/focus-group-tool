@@ -86,7 +86,8 @@ export default class CreateGroup extends Component {
         }))
       )
     ), [])
-    .filter(constraint => !isNaN(constraint.count));
+    .filter(constraint => Number.isInteger(constraint.count));
+    console.log('Constraints', constraintObject);
 
     const focusGroup = selectFocusGroup(data, constraintObject, groupSize);
     const unmetCriteria = calculateUnmetCriteria(focusGroup, constraintObject);
@@ -95,7 +96,6 @@ export default class CreateGroup extends Component {
 
     // set members of the group as selected
     Object.keys(focusGroup).forEach((key) => {
-      console.log(focusGroup[key].id, session);
       addToGroup(focusGroup[key].id, session);
     });
 
@@ -151,9 +151,10 @@ export default class CreateGroup extends Component {
             <select
               name="session"
               value={session}
+              defaultValue=""
               onChange={this.handleSessionChange}
             >
-              <option disabled selected value=""> -- Select a session -- </option>
+              <option disabled value=""> -- Select a session -- </option>
               {availability && availability.map(o => (
                 <option value={o}>{o}</option>
               ))}
@@ -169,7 +170,19 @@ export default class CreateGroup extends Component {
           );
         })}
         <button><Link to="/">Cancel</Link></button>
-        <button onClick={this.handleCreate}>Create</button>
+        <button
+          type="button"
+          onClick={this.handleCreate}
+          disabled={!session}
+        >
+          Create
+        </button>
+        {!session && (
+          <div className={styles.submitHint}>
+            Please select a session for this group.
+          </div>
+        )}
+
       </div>
     );
   }

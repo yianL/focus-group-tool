@@ -45,4 +45,6 @@
   margin-bottom: 40px;
 }
 
-
+.submitHint {
+  color: red;
+}

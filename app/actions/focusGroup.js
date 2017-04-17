@@ -4,6 +4,8 @@ export const SET_CONSTRAINT = 'SET_CONSTRAINT';
 export const SET_MISMATCHES = 'SET_MISMATCHES';
 export const SET_SESSION = 'SET_SESSION';
 export const CREATE_GROUP = 'CREATE_GROUP';
+export const CHECK_PERSON_IN = 'CHECK_PERSON_IN';
+export const UNCHECK_PERSON_IN = 'UNCHECK_PERSON_IN';
 
 export const setGroupSize = (size) => ({
   type: SET_GROUP_SIZE,
@@ -28,4 +30,14 @@ export const setConstraint = (name, index, amount) => ({
 export const setMismatches = (mismatches) => ({
   type: SET_MISMATCHES,
   payload: { mismatches },
+});
+
+export const checkPersonIn = (id, session) => ({
+  type: CHECK_PERSON_IN,
+  payload: { id, session },
+});
+
+export const uncheckPersonIn = (id, session) => ({
+  type: UNCHECK_PERSON_IN,
+  payload: { id, session },
 });

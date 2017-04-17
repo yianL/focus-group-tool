@@ -5,6 +5,8 @@ import {
   SET_CONSTRAINT,
   SET_MISMATCHES,
   CREATE_GROUP,
+  CHECK_PERSON_IN,
+  UNCHECK_PERSON_IN,
 } from '../actions/focusGroup';
 import { LOAD_STATE } from '../actions/ui';
 import {
@@ -48,6 +50,33 @@ export default function candidates(state = InitialState, action) {
           session: state.session,
           constraints: state.constraints,
           mismatches: state.mismatches,
+          checkedIn: [],
+        },
+      };
+    }
+
+    case CHECK_PERSON_IN: {
+      const { id, session } = action.payload;
+      const groupName = `__${session}`;
+      const focusGroup = state[groupName];
+      return {
+        ...state,
+        [groupName]: {
+          ...focusGroup,
+          checkedIn: focusGroup.checkedIn.concat(id),
+        },
+      };
+    }
+
+    case UNCHECK_PERSON_IN: {
+      const { id, session } = action.payload;
+      const groupName = `__${session}`;
+      const focusGroup = state[groupName];
+      return {
+        ...state,
+        [groupName]: {
+          ...focusGroup,
+          checkedIn: focusGroup.checkedIn.filter(p => p !== id),
         },
       };
     }

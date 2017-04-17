@@ -9,6 +9,20 @@ ul li.isActive {
   color: red;
 }
 
+.focusGroupSelector {
+  list-style: none;
+  padding-left: 0;
+  display: inline-block;
+}
+
+.focusGroupSelector li {
+  display: inline-block;
+}
+
+.focusGroupSelector li:hover {
+  background-color: #e0e0e0;
+}
+
 .mismatchList li {
   cursor: pointer;
 }

@@ -6,7 +6,6 @@ import { Link } from 'react-router';
 import ResponseTable from './ResponseTable';
 import FocusGroupTable from './FocusGroupTable';
 import ActiveFilters from './ActiveFilters';
-import { COLUMNS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
 import styles from './Home.css';
 
@@ -37,21 +36,6 @@ export default class Home extends Component {
   onSaveButtonClick = () => {
     const { store } = this.context;
     ipcRenderer.send('open-save-dialog', store.getState());
-  }
-
-  onExportData = () => {
-    const { focusGroup } = this.props;
-    const exportColumns = COLUMNS.slice(1);
-    const focusGroupArray = [
-      exportColumns.map(col => col.header)
-    ];
-
-    focusGroup.forEach((person) => {
-      focusGroupArray.push(exportColumns.map(col => person[col.name]));
-    });
-
-    console.log('export', focusGroupArray);
-    ipcRenderer.send('export-csv', focusGroupArray);
   }
 
   handleSelectActiveGroup = (e) => {
@@ -123,10 +107,13 @@ export default class Home extends Component {
               <Link to="/create">Create Focus Group</Link>
             </button>
           )}
-          <button type="button" onClick={this.onExportData}>Export Data</button>
-          {mismatches.length > 0 && this.renderMismatches()}
+          {activeGroup && (
+            <button type="button">
+              <Link to="/checkin">Check-in</Link>
+            </button>
+          )}
           {focusGroups.length > 0 && (
-            <ul>
+            <ul className={styles.focusGroupSelector}>
               {focusGroups.map(f => (
                 <li
                   key={f}
@@ -138,6 +125,7 @@ export default class Home extends Component {
               ))}
             </ul>
           )}
+          {mismatches.length > 0 && this.renderMismatches()}
           {data.length > 0 && (
             <FocusGroupTable
               list={focusGroup}
