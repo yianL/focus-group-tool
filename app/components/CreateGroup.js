@@ -90,7 +90,8 @@ export default class CreateGroup extends Component {
     ), [])
     .filter(constraint => Number.isInteger(constraint.count));
 
-    const focusGroup = selectFocusGroup(data, constraintObject, groupSize);
+    const availableGroup = data.filter(person => person.availability.includes(session));
+    const focusGroup = selectFocusGroup(availableGroup, constraintObject, groupSize);
     const accuracy = getAccuracyOfFocusGroup(focusGroup, constraintObject);
     console.log('Group created, accuracy:', accuracy);
 
@@ -124,7 +125,7 @@ export default class CreateGroup extends Component {
     const {
       groupSize,
       session,
-      filterOptions: { availability },
+      availability,
     } = this.props;
 
     return (
@@ -168,7 +169,7 @@ export default class CreateGroup extends Component {
                 onChange={this.handleSessionChange}
               >
                 <option disabled value=""> -- Select a session -- </option>
-                {availability && availability.map(o => (
+                {availability.map(o => (
                   <option value={o}>{o}</option>
                 ))}
               </select>
