@@ -1,8 +1,8 @@
 .list {
   color: black;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   width: 100%;
-  height: 300px;
+  height: 260px;
   position: relative;
 }
 
@@ -33,15 +33,38 @@
   font-size: 12px;
 }
 
-.headerDiv {
-  padding: 3px;
+.no {
+  background-color: #f2dede !important;
 }
 
-.filterModal {
-  color: black;
+.headerDiv {
+  padding: 3px;
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .filters {
   list-style: none;
   padding-left: 0;
+  margin-bottom: 0;
+}
+
+.filters li {
+  padding: 10px 0;
+}
+/*.filters li:first-child {
+  border-top: 1px solid #d0d0d0;
+}
+.filters li:last-child {
+  border-bottom: 1px solid #d0d0d0;
+}*/
+
+.filters li i {
+  margin-right: 10px;
+}
+
+.filters li:hover {
+  background-color: #efefef;
 }

@@ -1,13 +1,16 @@
 // @flow
-import React, { Component } from 'react';
-import { Link } from 'react-router';
+import React, { PropTypes, Component } from 'react';
 import { push } from 'react-router-redux';
+import { Button, Table, Nav, Navbar, NavItem, Alert } from 'reactstrap';
 import { DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
 import { selectFocusGroup, calculateUnmetCriteria, getAccuracyOfFocusGroup } from '../utils/algorithms';
 import styles from './CreateGroup.css';
 
 export default class CreateGroup extends Component {
+  static contextTypes = {
+    store: PropTypes.any,
+  };
 
   getConfigurationTable = (key) => {
     const { constraints, groupSize } = this.props;
@@ -16,7 +19,7 @@ export default class CreateGroup extends Component {
     const sum = constraint.reduce((prev, current) => isNaN(current) ? prev : prev + current, 0);
 
     return (
-      <table>
+      <Table striped>
         <thead>
           <tr>
             <th />
@@ -54,7 +57,7 @@ export default class CreateGroup extends Component {
             <td>{(sum * 100 / groupSize).toFixed(1)}%</td>
           </tr>
         </tbody>
-      </table>
+      </Table>
     );
   }
 
@@ -66,12 +69,12 @@ export default class CreateGroup extends Component {
   }
 
   handleCreate = () => {
+    const { store } = this.context;
     const {
       data,
       constraints,
       session,
       groupSize,
-      dispatch,
       addToGroup,
       createGroup,
       setMismatches,
@@ -102,7 +105,7 @@ export default class CreateGroup extends Component {
     setMismatches(unmetCriteria);
     createGroup(session);
 
-    dispatch(push('/'));
+    store.dispatch(push('/'));
   }
 
   handleGroupSizeChange = (event) => {
@@ -119,6 +122,8 @@ export default class CreateGroup extends Component {
     setSession(value);
   }
 
+  gotoHome = () => this.context.store.dispatch(push('/'));
+
   render() {
     const {
       groupSize,
@@ -128,61 +133,67 @@ export default class CreateGroup extends Component {
 
     return (
       <div className={styles.createGroup}>
-        <h2>
-          <Link to="/">
-            <i className="fa fa-chevron-circle-left fa-fw" />
-          </Link>
-          Create Focus Group
-        </h2>
-        <div className={styles.groupSize}>
-          <h3>
-            Group Size:
-            <input
-              type="number"
-              name="groupSize"
-              value={groupSize}
-              onChange={this.handleGroupSizeChange}
-            />
-          </h3>
-        </div>
-        <div className={styles.groupSize}>
-          <h3>
-            Session:
-            <select
-              name="session"
-              value={session}
-              defaultValue=""
-              onChange={this.handleSessionChange}
-            >
-              <option disabled value=""> -- Select a session -- </option>
-              {availability && availability.map(o => (
-                <option value={o}>{o}</option>
-              ))}
-            </select>
-          </h3>
-        </div>
-        {Object.keys(DEMOGRAPHIC_METRICS).map((key) => {
-          return (
+        <Navbar color="inverse" inverse light toggleable>
+          <span className="navbar-brand">Create Focus Group</span>
+          <Nav className="ml-auto" navbar>
+            <NavItem>
+              <Button onClick={this.gotoHome}>
+                <i className="fa fa-chevron-circle-left fa-fw" />
+                Back
+              </Button>
+            </NavItem>
+          </Nav>
+        </Navbar>
+        <div className="container">
+          <div className={styles.groupSize}>
+            <h5>
+              Group Size:
+              <input
+                type="number"
+                name="groupSize"
+                value={groupSize}
+                onChange={this.handleGroupSizeChange}
+              />
+            </h5>
+          </div>
+          {Object.keys(DEMOGRAPHIC_METRICS).map((key) => (
             <div className={styles.contraintSet} key={key}>
-              <h3>{capitalize(key)}</h3>
+              <h5>{capitalize(key)}</h5>
               {this.getConfigurationTable(key)}
             </div>
-          );
-        })}
-        <button><Link to="/">Cancel</Link></button>
-        <button
-          type="button"
-          onClick={this.handleCreate}
-          disabled={!session}
-        >
-          Create
-        </button>
-        {!session && (
-          <div className={styles.submitHint}>
-            Please select a session for this group.
+            ))}
+          <div className={styles.groupSize}>
+            <h5>
+              Session:
+              <select
+                name="session"
+                value={session}
+                defaultValue=""
+                onChange={this.handleSessionChange}
+              >
+                <option disabled value=""> -- Select a session -- </option>
+                {availability && availability.map(o => (
+                  <option value={o}>{o}</option>
+                ))}
+              </select>
+            </h5>
           </div>
-        )}
-
+          <div className="actionBar">
+            <Button onClick={this.gotoHome}>Cancel</Button>
+            <Button
+              color="primary"
+              onClick={this.handleCreate}
+              disabled={!session}
+            >
+              Create
+            </Button>
+          </div>
+          {!session && (
+            <Alert color="warning">
+              Please select a session for this group.
+            </Alert>
+          )}
+        </div>
       </div>
     );
   }

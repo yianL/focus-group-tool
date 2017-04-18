@@ -1,9 +1,6 @@
 .createGroup {
   position: relative;
 }
-.createGroup h3 {
-  margin: .5em 0;
-}
 
 .createGroup table {
   width: 100%;
@@ -19,13 +16,18 @@
   width: 60px;
 }
 
+.createGroup table th {
+  font-size: .7em;
+  text-align: center;
+}
+
 .createGroup table td {
   text-align: center;
   padding: 5px 10px;
 }
 
 .groupSize {
-  margin-bottom: 40px;
+  margin: 30px 0;
 }
 
 .groupSize input {
@@ -43,8 +45,4 @@
 
 .contraintSet {
   margin-bottom: 40px;
-}
-
-.submitHint {
-  color: red;
 }

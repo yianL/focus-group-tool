@@ -1,9 +1,9 @@
 const WIDTH = {
-  action: 60,
-  boolean: 80,
-  short: 120,
-  medium: 180,
-  long: 240,
+  action: 80,
+  boolean: 100,
+  short: 140,
+  medium: 200,
+  long: 260,
 };
 
 const STATES = {
@@ -14,7 +14,7 @@ const STATES = {
 
 const DEMOGRAPHIC_METRICS = {
   education: {
-    style: { backgroundColor: 'yellow' },
+    style: { backgroundColor: '#dff0d8' },
     columns: [
       { name: 'education', value: 'Less than 9th grade', label: '< 9th' },
       { name: 'education', value: '9th to 12 grade, no diploma', label: '9-12' },
@@ -26,7 +26,7 @@ const DEMOGRAPHIC_METRICS = {
     ]
   },
   age: {
-    style: { backgroundColor: 'green' },
+    style: { backgroundColor: '#d9edf7' },
     columns: [
       { name: 'age', value: '18-29', label: '18-29' },
       { name: 'age', value: '30-39', label: '30-39' },
@@ -38,7 +38,7 @@ const DEMOGRAPHIC_METRICS = {
     ]
   },
   ethnicity: {
-    style: { backgroundColor: 'blue' },
+    style: { backgroundColor: '#fcf8e3' },
     columns: [
       { name: 'ethnicity', value: 'Black or African American', label: 'Bl' },
       { name: 'ethnicity', value: 'American Indian or Alaska Native', label: 'Am' },
@@ -50,21 +50,21 @@ const DEMOGRAPHIC_METRICS = {
     ]
   },
   gender: {
-    style: { backgroundColor: 'red' },
+    style: { backgroundColor: '#f2dede' },
     columns: [
       { name: 'gender', value: 'Male', label: 'M' },
       { name: 'gender', value: 'Female', label: 'F' },
     ]
   },
   married: {
-    style: { backgroundColor: 'purple' },
+    style: { backgroundColor: '#d0e9c6' },
     columns: [
     { name: 'married', value: 'Yes', label: 'Y' },
     { name: 'married', value: 'No', label: 'N' },
     ]
   },
   income: {
-    style: { backgroundColor: 'cyan' },
+    style: { backgroundColor: '#bcdff1' },
     columns: [
       { name: 'income', value: 'Less than $35,000 per year', label: '< 35K' },
       { name: 'income', value: '$35,000 to $75,000 per year', label: '35-75K' },
@@ -75,14 +75,14 @@ const DEMOGRAPHIC_METRICS = {
     ]
   },
   children: {
-    style: { backgroundColor: 'orange' },
+    style: { backgroundColor: '#faf2cc' },
     columns: [
       { name: 'children', value: 'Yes', label: 'Y' },
       { name: 'children', value: 'No', label: 'N' },
     ]
   },
   employed: {
-    style: { backgroundColor: 'gray' },
+    style: { backgroundColor: '#ebcccc' },
     columns: [
       { name: 'employed', value: 'Yes - full time', label: 'Full' },
       { name: 'employed', value: 'Yes - part time', label: 'Part' },

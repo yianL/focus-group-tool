@@ -2,141 +2,137 @@ import { getRandomInt } from './helpers';
 
 // Does a simple algorithm: Selects initial people at random then replaces people
 // to see if they improve the score. It saves the best replacement for each person
-var selectFocusGroup = (people, constraints, size) => {
-  if(size >= people.length)
-    return people
+const selectFocusGroup = (people, constraints, size) => {
+  if (size >= people.length) { return people; }
 
-  var focusGroup = grabRandomFocusGroup(people, size)
+  let focusGroup = grabRandomFocusGroup(people, size);
 
-  for (var tries=0; tries < 4; tries++) {
-    for (var i=0; i<people.length; i++) {
-      focusGroup = tryPersonInGroup(i, people, focusGroup, constraints)
+  for (let tries = 0; tries < 4; tries++) {
+    for (let i = 0; i < people.length; i++) {
+      focusGroup = tryPersonInGroup(i, people, focusGroup, constraints);
     }
   }
 
-  return focusGroup
-}
+  return focusGroup;
+};
 
-var getAccuracyOfFocusGroup = ( group, constraints ) => {
-  const score = scoreDataset( group, constraints );
+const getAccuracyOfFocusGroup = (group, constraints) => {
+  const score = scoreDataset(group, constraints);
 
   const constraintBounds = getConstraintBounds(constraints);
 
-  return ((constraintBounds - score) / constraintBounds * 100)+'%';
-}
+  return `${(constraintBounds - score) / constraintBounds * 100}%`;
+};
 
 // Tries to see if a person is a better fit in the group. Finds its optimal swap
 // and replaces that person. If no swap, it returns the same group.
 //
 // Returns a focus group object.
-var tryPersonInGroup = ( id, people, group, constraints ) => {
+var tryPersonInGroup = (id, people, group, constraints) => {
   // Person is in group already
-  if(group[id] != null)
-    return group
+  if (group[id] != null) { return group; }
 
-  var minId = null
-  var minScore = scoreDataset(group, constraints)
+  let minId = null;
+  let minScore = scoreDataset(group, constraints);
 
-  for (var personId in group) {
+  for (const personId in group) {
     if (group.hasOwnProperty(personId)) {
-      var hold = group[personId]
-      group[personId] = people[id]
+      const hold = group[personId];
+      group[personId] = people[id];
 
       // Try to see score replacing each person
-      var score = scoreDataset(group, constraints)
-      group[personId] = hold
+      const score = scoreDataset(group, constraints);
+      group[personId] = hold;
 
       // Find the best replacement
-      if(score < minScore) {
-        minId = personId
-        minScore = score
+      if (score < minScore) {
+        minId = personId;
+        minScore = score;
       }
     }
   }
 
-  if(minId != null) {
-    delete group[minId]
-    group[id] = people[id]
+  if (minId != null) {
+    delete group[minId];
+    group[id] = people[id];
   }
 
-  return group
-}
+  return group;
+};
 
 // Returns a JS Object with random people using their 'index' as keys to identify them
-var grabRandomFocusGroup = ( people, size ) => {
-  var grabbed = {}
-  while(Object.keys(grabbed).length < size) {
-    var index = getRandomInt(0, people.length)
-    if (grabbed[index] === undefined)
-      grabbed[index] = people[index]
+var grabRandomFocusGroup = (people, size) => {
+  const grabbed = {};
+  while (Object.keys(grabbed).length < size) {
+    const index = getRandomInt(0, people.length);
+    if (grabbed[index] === undefined) { grabbed[index] = people[index]; }
   }
 
-  return grabbed
-}
+  return grabbed;
+};
 
-var getConstraintBounds = ( constraints ) => {
-  var size = 0
-  for (let constraint of constraints)
-    size += constraint.count
+var getConstraintBounds = (constraints) => {
+  let size = 0;
+  for (const constraint of constraints) { size += constraint.count; }
 
-  return size
-}
+  return size;
+};
 
 // Returns the score of a set of people and how closely they follow
 // a set of constraints.
 // People Array: [ {age: "10-20", ...} ]
 // Constraints Array: [ {category: "age", target: "10-20", count: 4 } ]
-var scoreDataset = ( people, constraints, getOffset=false ) => {
+var scoreDataset = (people, constraints, getOffset = false) => {
   const group = Object.keys(people).reduce((prev, current) => prev.concat(people[current]), []);
-  var score = 0
+  let score = 0;
 
-  for (let constraint of constraints) {
-    score += scoreConstraint(group, constraint, getOffset)
+  for (const constraint of constraints) {
+    score += scoreConstraint(group, constraint, getOffset);
   }
 
-  return score
-}
+  return score;
+};
 
-var calculateUnmetCriteria = ( people, constraints ) => {
-  var unmetCriteria = []
+const calculateUnmetCriteria = (people, constraints) => {
+  const unmetCriteria = [];
 
-  for (let constraint of constraints) {
-    var offset = scoreDataset(people, [ constraint ], true)
+  for (const constraint of constraints) {
+    const offset = scoreDataset(people, [constraint], true);
 
-    if ( offset !== 0 ) {
-      constraint.offset = offset
-      unmetCriteria.push(constraint)
+    if (offset !== 0) {
+      constraint.offset = offset;
+      unmetCriteria.push(constraint);
     }
   }
 
-  return unmetCriteria
-}
+  return unmetCriteria;
+};
 
 
 // Returns the score for a given constraint, this is defined as the difference
 // between actual matches to a category and expected matches.
-var scoreConstraint = ( people, constraint, getOffset=false ) => {
-  var matches = 0
+var scoreConstraint = (people, constraint, getOffset = false) => {
+  let matches = 0;
 
-  for (let person of people) {
+  for (const person of people) {
     if (personFitsConstraint(person, constraint)) {
-      matches++
+      matches++;
     }
   }
 
-  var score = matches - constraint.count
-  return getOffset ? score : Math.abs(score)
-}
+  const score = matches - constraint.count;
+  return getOffset ? score : Math.abs(score);
+};
 
 // Return true if a person matches the given constraint
 // Return false if a person fails a given constraint
-var personFitsConstraint = ( person, constraint ) => {
-  var category = constraint.category
-  var target = constraint.target
-  var actual = person[category]
+var personFitsConstraint = (person, constraint) => {
+  const category = constraint.category;
+  const target = constraint.target;
+  const actual = person[category];
 
-  return (Array.isArray(actual) ? actual[0] : actual).startsWith(target)
-}
+  return (Array.isArray(actual) ? actual[0] : actual).includes(target);
+};
 
 export default {
   personFitsConstraint,

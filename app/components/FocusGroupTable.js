@@ -4,6 +4,7 @@
 import React, { PropTypes, PureComponent } from 'react';
 import { AutoSizer, MultiGrid } from 'react-virtualized';
 import { COLUMNS, DEMOGRAPHIC_METRICS } from '../utils/constants';
+import { capitalize } from '../utils/helpers';
 import styles from './FocusGroupTable.css';
 
 const STYLE = {
@@ -65,7 +66,7 @@ class FocusGroupTable extends PureComponent {
           key={key}
           style={style}
         >
-          {column.category}
+          {capitalize(column.category)}
         </div>
       );
     }
@@ -74,6 +75,7 @@ class FocusGroupTable extends PureComponent {
       const demoColumn = DEMOGRAPHIC_METRICS[column.name] || { style: {} };
       return (
         <div
+          title={column.value}
           className={styles.Cell}
           key={key}
           style={{ ...style, ...demoColumn.style }}
@@ -95,9 +97,11 @@ class FocusGroupTable extends PureComponent {
           key={key}
           style={style}
         >
-          <button type="button" onClick={() => removeFromGroup(datum.id)}>
-            -
-          </button>
+          <i
+            className="fa fa-user-times action"
+            title="Remove from group"
+            onClick={() => removeFromGroup(datum.id)}
+          />
         </div>
       );
     }
@@ -130,33 +134,26 @@ class FocusGroupTable extends PureComponent {
 
     return (
       <div className={styles.list}>
-        {list.length === 0 && (
-          <div className={styles.noRows}>
-            No rows
-          </div>
-        )}
-        {list.length > 0 && (
-          <AutoSizer disableHeight>
-            {({ width }) => (
-              <MultiGrid
-                list={list}
-                fixedColumnCount={3}
-                fixedRowCount={2}
-                cellRenderer={this.cellRenderer}
-                columnWidth={this.getColumnWidth}
-                columnCount={this.columns.length}
-                height={300}
-                rowHeight={40}
-                rowCount={list.length > 0 ? list.length + 2 : 0}
-                style={STYLE}
-                styleBottomLeftGrid={STYLE_BOTTOM_LEFT_GRID}
-                styleTopLeftGrid={STYLE_TOP_LEFT_GRID}
-                styleTopRightGrid={STYLE_TOP_RIGHT_GRID}
-                width={width}
-              />
-            )}
-          </AutoSizer>
-        )}
+        <AutoSizer disableHeight>
+          {({ width }) => (
+            <MultiGrid
+              list={list}
+              fixedColumnCount={3}
+              fixedRowCount={2}
+              cellRenderer={this.cellRenderer}
+              columnWidth={this.getColumnWidth}
+              columnCount={this.columns.length}
+              height={260}
+              rowHeight={40}
+              rowCount={list.length > 0 ? list.length + 2 : 0}
+              style={STYLE}
+              styleBottomLeftGrid={STYLE_BOTTOM_LEFT_GRID}
+              styleTopLeftGrid={STYLE_TOP_LEFT_GRID}
+              styleTopRightGrid={STYLE_TOP_RIGHT_GRID}
+              width={width}
+            />
+          )}
+        </AutoSizer>
       </div>
     );
   }

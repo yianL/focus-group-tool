@@ -3,8 +3,17 @@
  */
 import React, { PropTypes, PureComponent } from 'react';
 import cn from 'classnames';
+import { ipcRenderer } from 'electron';
 import { AutoSizer, MultiGrid } from 'react-virtualized';
-import Modal from 'react-modal';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  FormGroup,
+  Label,
+} from 'reactstrap';
 import { COLUMNS, STATES } from '../utils/constants';
 import styles from './ResponseTable.css';
 
@@ -26,24 +35,6 @@ const STYLE_TOP_RIGHT_GRID = {
   fontWeight: 'bold'
 };
 
-const STYLE_MODAL = {
-  content: {
-    top: undefined,
-    bottom: undefined,
-    left: undefined,
-    right: undefined,
-    position: 'relative',
-    border: '1px solid rgb(204, 204, 204)',
-    background: 'rgb(255, 255, 255)',
-    overflow: 'auto',
-    borderRadius: '4px',
-    outline: 'none',
-    padding: '20px',
-    width: '360px',
-    margin: '50px auto',
-  }
-};
-
 const InitialState = {
   showModal: false,
   activeColumn: {},
@@ -58,6 +49,10 @@ class ResponseTable extends PureComponent {
   constructor(props) {
     super(props);
     this.state = InitialState;
+  }
+
+  onImportButtonClick = () => {
+    ipcRenderer.send('open-file-dialog');
   }
 
   getColumnWidth = ({ index }) => COLUMNS[index].width;
@@ -129,16 +124,15 @@ class ResponseTable extends PureComponent {
           key={key}
           style={style}
         >
-          <div className={styles.headerDiv}>
+          <div className={styles.headerDiv} title={column.header}>
             {column.header}
           </div>
           {(column.search || column.filter) && (
-            <button
-              type="button"
+            <i
+              className="fa fa-filter action"
+              title="Filters"
               onClick={() => this.handleOpenModal(column)}
-            >
-              O
-            </button>
+            />
           )}
         </div>
       );
@@ -163,28 +157,26 @@ class ResponseTable extends PureComponent {
           style={style}
         >
           {datum.state === STATES.DEFAULT && activeGroup && (
-            <button
-              type="button"
+            <i
+              className="fa fa-user-plus action"
+              title="Add to group"
               onClick={() => addToGroup(datum.id, activeGroup)}
-            >
-              +
-            </button>
+            />
+
           )}
           {datum.state !== STATES.UNAVAILABLE && (
-            <button
-              type="button"
+            <i
+              className="fa fa-ban action"
+              title="Mark as unavailable"
               onClick={() => markAsUnavailable(datum.id)}
-            >
-              X
-            </button>
+            />
           )}
           {datum.state === STATES.UNAVAILABLE && (
-            <button
-              type="button"
+            <i
+              className="fa fa-repeat action"
+              title="Mark as available"
               onClick={() => markAsAvailable(datum.id)}
-            >
-              O
-            </button>
+            />
           )}
         </div>
       );
@@ -192,7 +184,7 @@ class ResponseTable extends PureComponent {
 
     return (
       <div
-        className={styles.Cell}
+        className={cn(styles.Cell, datum.state === STATES.UNAVAILABLE && styles.no)}
         key={key}
         style={style}
       >
@@ -225,10 +217,12 @@ class ResponseTable extends PureComponent {
       <ul className={styles.filters}>
         {options.map(option => (
           <li onClick={this.toggleFilterOption}>
-            <i className={cn(
+            <i
+              className={cn(
               'fa fa-fw',
-              selectedFilters.includes(option) ? 'fa-check' : 'fa-minus'
-            )} />
+              selectedFilters.includes(option) ? 'fa-check' : ''
+            )}
+            />
             {option}
           </li>
         ))}
@@ -246,7 +240,18 @@ class ResponseTable extends PureComponent {
           <div className={styles.noRows}>
             {filters.length > 0
               ? 'No data: try disabling some filters to show more data'
-              : 'No data: try importing a response CSV file'
+              : (
+                <p>
+                  No data:
+                  <Button
+                    size="sm"
+                    color="primary"
+                    onClick={this.onImportButtonClick}
+                  >
+                    Import Responses Data
+                  </Button>
+                </p>
+              )
             }
           </div>
         )}
@@ -260,7 +265,7 @@ class ResponseTable extends PureComponent {
                 cellRenderer={this.cellRenderer}
                 columnWidth={this.getColumnWidth}
                 columnCount={COLUMNS.length}
-                height={300}
+                height={260}
                 rowHeight={40}
                 rowCount={list.length > 0 ? list.length + 1 : 0}
                 style={STYLE}
@@ -275,18 +280,28 @@ class ResponseTable extends PureComponent {
 
         <Modal
           isOpen={showModal}
-          style={STYLE_MODAL}
-          contentLabel="Minimal Modal Example"
+          toggle={this.handleCloseModal}
         >
-          <div className={styles.filterModal}>
-            <h3>{activeColumn.header}</h3>
+          <ModalHeader toggle={this.handleCloseModal}>{activeColumn.header}</ModalHeader>
+          <ModalBody>
             {activeColumn.search && (
-              <input name="search" ref={this.getSearchInputRef} />
+              <FormGroup>
+                <Label for="search">Search by:</Label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="search"
+                  id="search"
+                  ref={this.getSearchInputRef}
+                />
+              </FormGroup>
             )}
             {activeColumn.filter && this.renderFilterOptions()}
-            <button onClick={this.handleCloseModal}>Cancel</button>
-            <button onClick={this.handleApplyFilter}>Apply</button>
-          </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.handleCloseModal}>Cancel</Button>{' '}
+            <Button color="primary" onClick={this.handleApplyFilter}>Apply</Button>
+          </ModalFooter>
         </Modal>
       </div>
     );

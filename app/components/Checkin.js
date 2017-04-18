@@ -1,6 +1,7 @@
 // @flow
 import React, { PropTypes } from 'react';
-import classNames from 'classnames';
+import { push } from 'react-router-redux';
+import { Button, Table, Nav, Navbar, NavItem, Alert } from 'reactstrap';
 import { ipcRenderer } from 'electron';
 import { Link } from 'react-router';
 import { COLUMNS, DEMOGRAPHIC_METRICS } from '../utils/constants';
@@ -8,6 +9,10 @@ import { capitalize } from '../utils/helpers';
 import styles from './Checkin.css';
 
 export default class Home extends React.Component {
+  static contextTypes = {
+    store: PropTypes.any,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -38,7 +43,7 @@ export default class Home extends React.Component {
       group.filter(person => person[col.name].includes(col.value)).length);
 
     return (
-      <table>
+      <Table striped>
         <thead>
           <tr>
             <th />
@@ -66,7 +71,7 @@ export default class Home extends React.Component {
             <td />
           </tr>
         </tbody>
-      </table>
+      </Table>
     );
   }
 
@@ -78,15 +83,15 @@ export default class Home extends React.Component {
     const { focusGroup, checkInStatus } = this.props;
     const group = focusGroup.filter((person) => checkInStatus.includes(person.id));
 
-    return Object.keys(DEMOGRAPHIC_METRICS).map((key) => {
-      return (
-        <div className={styles.contraintSet} key={key}>
-          <h3>{capitalize(key)}</h3>
-          {this.getDemographicTable(key, group)}
-        </div>
-      );
-    });
+    return Object.keys(DEMOGRAPHIC_METRICS).map((key) => (
+      <div className={styles.contraintSet} key={key}>
+        <h5>{capitalize(key)}</h5>
+        {this.getDemographicTable(key, group)}
+      </div>
+      ));
   }
+
+  gotoHome = () => this.context.store.dispatch(push('/'));
 
   render() {
     const { showDemographicSummary } = this.state;
@@ -100,38 +105,49 @@ export default class Home extends React.Component {
 
     return (
       <div>
-        <h2>
-          <Link to="/">
-            <i className="fa fa-chevron-circle-left fa-fw" />
-          </Link>
-          {`Group Check-in (Session: ${activeGroup})`}
-        </h2>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            {focusGroup.map((person) => (
+        <Navbar color="inverse" inverse light toggleable>
+          <span className="navbar-brand">
+            {`Group Check-in (Session: ${activeGroup})`}
+          </span>
+          <Nav className="ml-auto" navbar>
+            <NavItem>
+              <Button onClick={this.gotoHome}>
+                <i className="fa fa-chevron-circle-left fa-fw" />
+                Back
+              </Button>
+            </NavItem>
+          </Nav>
+        </Navbar>
+        <div className="container">
+          <Table striped>
+            <thead>
               <tr>
-                <td>
-                  {checkInStatus.includes(person.id)
-                  ? <button onClick={() => uncheckPersonIn(person.id, activeGroup)}>Undo</button>
-                  : <button onClick={() => checkPersonIn(person.id, activeGroup)}>Check-in</button>
-                  }
-                </td>
-                <td>{person.name}</td>
-                <td>{person.email}</td>
+                <th />
+                <th>Name</th>
+                <th>Email</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <button type="button" onClick={this.onExportData}>Export Attendees</button>
-        <button type="button" onClick={this.toggleDemographic}>Demographics Summary</button>
-        {showDemographicSummary && this.renderDemographicsSummary()}
+            </thead>
+            <tbody>
+              {focusGroup.map((person) => (
+                <tr>
+                  <td>
+                    {checkInStatus.includes(person.id)
+                    ? <Button size="sm" onClick={() => uncheckPersonIn(person.id, activeGroup)}>Undo</Button>
+                    : <Button color="info" size="sm" onClick={() => checkPersonIn(person.id, activeGroup)}>Check-in</Button>
+                    }
+                  </td>
+                  <td>{person.name}</td>
+                  <td>{person.email}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <div className="actionBar">
+            <Button color="primary" onClick={this.onExportData}>Export Attendees</Button>
+            <Button onClick={this.toggleDemographic}>Demographics Summary</Button>
+          </div>
+          {showDemographicSummary && this.renderDemographicsSummary()}
+        </div>
       </div>
     );
   }

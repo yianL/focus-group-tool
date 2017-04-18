@@ -3,7 +3,6 @@ import { render } from 'react-dom';
 import { hashHistory } from 'react-router';
 import { AppContainer } from 'react-hot-loader';
 import { syncHistoryWithStore } from 'react-router-redux';
-import 'react-virtualized/styles.css';
 
 import Root from './containers/Root';
 import configureStore from './store/configureStore';

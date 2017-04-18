@@ -10,10 +10,10 @@ const getFilteredCandidates = (state) => {
   const { data, filters } = state.candidates;
   return filters.reduce((prev, current) => {
     const { name, value } = current;
-   
+
     if (Array.isArray(value)) {
       return prev.filter(person => value.includes(person[name]));
-    } 
+    }
 
     const valueToCompare = value.toLowerCase();
     return prev.filter(person => person[name].toLowerCase().includes(valueToCompare));

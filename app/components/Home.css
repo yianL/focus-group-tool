@@ -1,30 +1,14 @@
-.container {
-}
-
-.container h2 {
-  font-size: 5rem;
-}
-
-ul li.isActive {
-  color: red;
-}
-
-.focusGroupSelector {
-  list-style: none;
-  padding-left: 0;
+.mismatchList {
   display: inline-block;
-}
-
-.focusGroupSelector li {
-  display: inline-block;
-}
-
-.focusGroupSelector li:hover {
-  background-color: #e0e0e0;
+  padding: 0;
+  margin: 0;
 }
 
 .mismatchList li {
+  display: inline-block;
   cursor: pointer;
+  margin-right: 10px;
+  color: #0275d8;
 }
 
 .mismatchList li:hover {

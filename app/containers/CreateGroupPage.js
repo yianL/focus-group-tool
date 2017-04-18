@@ -20,7 +20,6 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   ...bindActionCreators(FocusGroupActions, dispatch),
   addToGroup: (id, session) => dispatch(CandidateActions.addToGroup(id, session)),
-  dispatch
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateGroup);
