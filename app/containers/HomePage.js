@@ -31,25 +31,18 @@ const getFocusGroup = (state) => {
   return activeGroup ? state.candidates.data.filter((c) => c.state === chosen) : [];
 };
 
-const getConstraints = (state) => {
+const getFocusGroupMeta = (state) => {
   const { activeGroup } = state.ui;
   const chosen = `__${activeGroup}`;
-  return activeGroup ? state.focusGroup[chosen].constraints : {};
-};
-
-const getMismatches = (state) => {
-  const { activeGroup } = state.ui;
-  const chosen = `__${activeGroup}`;
-  return activeGroup ? state.focusGroup[chosen].mismatches : [];
+  return activeGroup ? state.focusGroup[chosen] : {};
 };
 
 const mapStateToProps = (state) => ({
   data: getFilteredCandidates(state),
   focusGroups: getFocusGroups(state),
   focusGroup: getFocusGroup(state),
+  focusGroupMeta: getFocusGroupMeta(state),
   activeGroup: state.ui.activeGroup,
-  constraints: getConstraints(state),
-  mismatches: getMismatches(state),
   filters: state.candidates.filters,
   filterOptions: state.candidates.filterOptions,
 });

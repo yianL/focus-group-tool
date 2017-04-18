@@ -18,8 +18,10 @@ import ResponseTable from './ResponseTable';
 import FocusGroupTable from './FocusGroupTable';
 import ActiveFilters from './ActiveFilters';
 import { capitalize } from '../utils/helpers';
+import { calculateUnmetCriteria } from '../utils/algorithms';
 import styles from './Home.css';
 
+/* eslint-disable react/prop-types */
 export default class Home extends Component {
   static contextTypes = {
     store: PropTypes.any,
@@ -57,11 +59,12 @@ export default class Home extends Component {
   renderActiveGroup = () => {
     const {
       addFilter,
-      mismatches,
       focusGroup,
-      constraints,
+      focusGroupMeta,
       removeFromGroup,
     } = this.props;
+
+    const mismatches = calculateUnmetCriteria(focusGroup, focusGroupMeta.constraintObject);
 
     return (
       <div>
@@ -92,7 +95,7 @@ export default class Home extends Component {
         </Row>
         <FocusGroupTable
           list={focusGroup}
-          constraints={constraints}
+          constraints={focusGroupMeta.constraints}
           removeFromGroup={removeFromGroup}
         />
       </div>
@@ -120,16 +123,13 @@ export default class Home extends Component {
   render() {
     const {
       data,
-      focusGroup,
       focusGroups,
       activeGroup,
       addToGroup,
-      removeFromGroup,
       addFilter,
       removeFilter,
       markAsUnavailable,
       markAsAvailable,
-      constraints,
       filters,
       filterOptions,
     } = this.props;

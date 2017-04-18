@@ -1,7 +1,6 @@
 // @flow
 export const SET_GROUP_SIZE = 'SET_GROUP_SIZE';
 export const SET_CONSTRAINT = 'SET_CONSTRAINT';
-export const SET_MISMATCHES = 'SET_MISMATCHES';
 export const SET_SESSION = 'SET_SESSION';
 export const CREATE_GROUP = 'CREATE_GROUP';
 export const CHECK_PERSON_IN = 'CHECK_PERSON_IN';
@@ -17,19 +16,14 @@ export const setSession = (session) => ({
   payload: { session },
 });
 
-export const createGroup = (session) => ({
+export const createGroup = (session, constraintObject) => ({
   type: CREATE_GROUP,
-  payload: { session },
+  payload: { session, constraintObject },
 });
 
 export const setConstraint = (name, index, amount) => ({
   type: SET_CONSTRAINT,
   payload: { name, index, amount },
-});
-
-export const setMismatches = (mismatches) => ({
-  type: SET_MISMATCHES,
-  payload: { mismatches },
 });
 
 export const checkPersonIn = (id, session) => ({

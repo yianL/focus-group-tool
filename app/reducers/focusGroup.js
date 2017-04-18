@@ -3,7 +3,6 @@ import {
   SET_GROUP_SIZE,
   SET_SESSION,
   SET_CONSTRAINT,
-  SET_MISMATCHES,
   CREATE_GROUP,
   CHECK_PERSON_IN,
   UNCHECK_PERSON_IN,
@@ -17,7 +16,6 @@ const InitialState = {
   groupSize: 15,
   session: null,
   constraints: {},
-  mismatches: [],
 };
 
 export default function candidates(state = InitialState, action) {
@@ -41,15 +39,15 @@ export default function candidates(state = InitialState, action) {
     }
 
     case CREATE_GROUP: {
-      const { session } = action.payload;
+      const { session, constraintObject } = action.payload;
 
       return {
         ...state,
         [`__${session}`]: {
-          groupSize: state.groupSize,
-          session: state.session,
+          session,
+          constraintObject,
           constraints: state.constraints,
-          mismatches: state.mismatches,
+          groupSize: state.groupSize,
           checkedIn: [],
         },
       };
@@ -95,15 +93,6 @@ export default function candidates(state = InitialState, action) {
       return {
         ...state,
         constraints: newConstraints,
-      };
-    }
-
-    case SET_MISMATCHES: {
-      const { mismatches } = action.payload;
-
-      return {
-        ...state,
-        mismatches,
       };
     }
 

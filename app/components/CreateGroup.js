@@ -4,7 +4,7 @@ import { push } from 'react-router-redux';
 import { Button, Table, Nav, Navbar, NavItem, Alert } from 'reactstrap';
 import { DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
-import { selectFocusGroup, calculateUnmetCriteria, getAccuracyOfFocusGroup } from '../utils/algorithms';
+import { selectFocusGroup, getAccuracyOfFocusGroup } from '../utils/algorithms';
 import styles from './CreateGroup.css';
 
 export default class CreateGroup extends Component {
@@ -77,7 +77,6 @@ export default class CreateGroup extends Component {
       groupSize,
       addToGroup,
       createGroup,
-      setMismatches,
     } = this.props;
 
     const constraintObject = Object.keys(constraints).reduce((prev, current) => (
@@ -90,10 +89,8 @@ export default class CreateGroup extends Component {
       )
     ), [])
     .filter(constraint => Number.isInteger(constraint.count));
-    console.log('Constraints', constraintObject);
 
     const focusGroup = selectFocusGroup(data, constraintObject, groupSize);
-    const unmetCriteria = calculateUnmetCriteria(focusGroup, constraintObject);
     const accuracy = getAccuracyOfFocusGroup(focusGroup, constraintObject);
     console.log('Group created, accuracy:', accuracy);
 
@@ -102,8 +99,7 @@ export default class CreateGroup extends Component {
       addToGroup(focusGroup[key].id, session);
     });
 
-    setMismatches(unmetCriteria);
-    createGroup(session);
+    createGroup(session, constraintObject);
 
     store.dispatch(push('/'));
   }
