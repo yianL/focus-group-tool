@@ -47,7 +47,7 @@ export default function candidates(state = InitialState, action) {
       // push all the boolean filter options
       COLUMNS.filter(col => col.filter === 'BOOLEAN')
         .forEach(col => {
-          filterOptions[col.name] = ['yes', 'no'];
+          filterOptions[col.name] = ['Yes', 'No'];
         });
 
       return {
