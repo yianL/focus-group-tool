@@ -42,6 +42,7 @@ app/style.css.map
 dist
 main.js
 main.js.map
+resources/focusGroupState1.json
 
 .idea
 npm-debug.log.*

@@ -17,6 +17,7 @@ import {
 import ResponseTable from './ResponseTable';
 import FocusGroupTable from './FocusGroupTable';
 import ActiveFilters from './ActiveFilters';
+import { COLUMNS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
 import { calculateUnmetCriteria } from '../utils/algorithms';
 import styles from './Home.css';
@@ -36,6 +37,21 @@ export default class Home extends Component {
     ipcRenderer.on('state-loaded', (event, state) => {
       loadState(state);
     });
+  }
+
+  onExportData = () => {
+    const { focusGroup } = this.props;
+    const exportColumns = COLUMNS.slice(1);
+    const focusGroupArray = [
+      exportColumns.map(col => col.header)
+    ];
+
+    focusGroup.forEach((person) => {
+      focusGroupArray.push(exportColumns.map(col => person[col.name]));
+    });
+
+    console.log('export', focusGroupArray);
+    ipcRenderer.send('export-csv', focusGroupArray);
   }
 
   onLoadButtonClick = () => {
@@ -74,7 +90,7 @@ export default class Home extends Component {
             <div>{`Size: ${focusGroup.length}`}</div>
             <span>Unmet Criteria: </span>
             <ul className={styles.mismatchList}>
-              {mismatches.map((mismatch) => {
+              {mismatches.length > 0 ? mismatches.map((mismatch) => {
                 const { category, target, count, offset } = mismatch;
                 return (
                   <li
@@ -84,10 +100,13 @@ export default class Home extends Component {
                     {`${capitalize(category)} ${target} (${count + offset}/${count})`}
                   </li>
                 );
-              })}
+              }) : 'None'}
             </ul>
           </Col>
-          <Col xs="2" className="d-flex justify-content-end">
+          <Col xs="3" className="d-flex justify-content-end">
+            <Button onClick={this.onExportData} className="mr-2">
+              Export
+            </Button>
             <Button onClick={this.gotoCheckin}>
               Check-in
             </Button>

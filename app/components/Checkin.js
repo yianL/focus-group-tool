@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react';
 import { push } from 'react-router-redux';
 import { Button, Table, Nav, Navbar, NavItem, Alert } from 'reactstrap';
 import { ipcRenderer } from 'electron';
-import { Link } from 'react-router';
 import { COLUMNS, DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
 import styles from './Checkin.css';
@@ -75,11 +74,23 @@ export default class Home extends React.Component {
     );
   }
 
+  checkAllIn = () => {
+    const { focusGroup, activeGroup, checkPersonIn } = this.props;
+    focusGroup.forEach(person => checkPersonIn(person.id, activeGroup));
+  }
+
+  uncheckAllIn = () => {
+    const { focusGroup, activeGroup, uncheckPersonIn } = this.props;
+    focusGroup.forEach(person => uncheckPersonIn(person.id, activeGroup));
+  }
+
   toggleDemographic = () => this.setState({
     showDemographicSummary: !this.state.showDemographicSummary,
   });
 
-  renderDemographicsSummary() {
+  gotoHome = () => this.context.store.dispatch(push('/'));
+
+  renderDemographicsSummary = () => {
     const { focusGroup, checkInStatus } = this.props;
     const group = focusGroup.filter((person) => checkInStatus.includes(person.id));
 
@@ -90,8 +101,6 @@ export default class Home extends React.Component {
       </div>
       ));
   }
-
-  gotoHome = () => this.context.store.dispatch(push('/'));
 
   render() {
     const { showDemographicSummary } = this.state;
@@ -122,24 +131,35 @@ export default class Home extends React.Component {
           <Table striped>
             <thead>
               <tr>
-                <th />
+                <th>
+                  {checkInStatus.length < focusGroup.length
+                    ? <Button color="primary" size="sm" onClick={this.checkAllIn}>Check all</Button>
+                    : <Button color="primary" size="sm" onClick={this.uncheckAllIn}>Uncheck all</Button>
+                  }
+                </th>
                 <th>Name</th>
                 <th>Email</th>
               </tr>
             </thead>
             <tbody>
-              {focusGroup.map((person) => (
-                <tr>
-                  <td>
-                    {checkInStatus.includes(person.id)
-                    ? <Button size="sm" onClick={() => uncheckPersonIn(person.id, activeGroup)}>Undo</Button>
-                    : <Button color="info" size="sm" onClick={() => checkPersonIn(person.id, activeGroup)}>Check-in</Button>
-                    }
-                  </td>
-                  <td>{person.name}</td>
-                  <td>{person.email}</td>
-                </tr>
-              ))}
+              {focusGroup.map((person) => {
+                const checkedIn = checkInStatus.includes(person.id);
+                return (
+                  <tr>
+                    <td>
+                      {checkedIn
+                        ? <Button size="sm" onClick={() => uncheckPersonIn(person.id, activeGroup)}>Undo</Button>
+                        : <Button color="info" size="sm" onClick={() => checkPersonIn(person.id, activeGroup)}>Check-in</Button>
+                      }
+                    </td>
+                    <td>
+                      {person.name}
+                      {checkedIn && <i className="fa fa-check text-success ml-1" />}
+                    </td>
+                    <td>{person.email}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
           <div className="actionBar">
