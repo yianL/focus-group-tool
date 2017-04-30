@@ -19,6 +19,17 @@ export default class Home extends React.Component {
     };
   }
 
+  componentWillMount() {
+    ipcRenderer.on('saved', (event, data) => {
+      let message = `${data.length} entries saved to participants database:\n`;
+
+      data.forEach((d) => {
+        message += `- ${d.email}\n`;
+      });
+      window.alert(message);
+    });
+  }
+
   onExportData = () => {
     const { focusGroup, checkInStatus } = this.props;
     const exportColumns = COLUMNS.slice(1);
@@ -31,8 +42,16 @@ export default class Home extends React.Component {
         focusGroupArray.push(exportColumns.map(col => person[col.name]));
       });
 
-    console.log('export', focusGroupArray);
     ipcRenderer.send('export-csv', focusGroupArray);
+  }
+
+  onSaveAttendees = () => {
+    const { focusGroup, checkInStatus } = this.props;
+    const attendees = focusGroup.filter((person) => checkInStatus.includes(person.id));
+
+    if (window.confirm(`This will save ${attendees.length} people into the database, are you sure?`)) {
+      ipcRenderer.send('save-to-db', attendees);
+    }
   }
 
   getDemographicTable = (key, group) => {
@@ -164,6 +183,7 @@ export default class Home extends React.Component {
           </Table>
           <div className="actionBar">
             <Button color="primary" onClick={this.onExportData}>Export Attendees</Button>
+            <Button onClick={this.onSaveAttendees}>Save Attendees into DB</Button>
             <Button onClick={this.toggleDemographic}>Demographics Summary</Button>
           </div>
           {showDemographicSummary && this.renderDemographicsSummary()}

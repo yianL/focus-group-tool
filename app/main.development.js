@@ -2,8 +2,10 @@
 import fs from 'fs';
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import parse from 'csv-parse';
+import settings from 'electron-settings';
 import stringify from 'csv-stringify';
 import MenuBuilder from './menu';
+import { COLUMNSBYID } from './utils/constants';
 
 let mainWindow = null;
 
@@ -46,6 +48,11 @@ const installExtensions = async () => {
 app.on('ready', async () => {
   await installExtensions();
 
+  // Initialize configs
+  if (!settings.has('pastParticipants')) {
+    settings.set('pastParticipants', []);
+  }
+
   mainWindow = new BrowserWindow({
     show: false,
     width: 1200,
@@ -81,7 +88,22 @@ ipcMain.on('open-file-dialog', (event) =>
       if (err) throw err;
       parse(data, { autoParse: true }, (error, result) => {
         if (error) throw error;
-        event.sender.send('file-loaded', result);
+        const pastParticipants = settings.get('pastParticipants').map(p => p.email);
+        const filteredOut = [];
+        const included = [];
+        const candidates = result.filter((person) => {
+          const email = person[COLUMNSBYID.email.index - 1];
+          if (pastParticipants.includes(email) || included.includes(email)) {
+            filteredOut.push(person);
+            return false;
+          }
+          included.push(email);
+          return true;
+        });
+        event.sender.send('file-loaded', {
+          candidates,
+          filteredOut,
+        });
       });
     });
   })
@@ -154,4 +176,16 @@ ipcMain.on('export-csv', (event, data) => {
       });
     });
   });
+});
+
+ipcMain.on('save-to-db', (event, data) => {
+  const pastParticipants = settings.get('pastParticipants');
+  settings.set('pastParticipants', pastParticipants.concat(data));
+  console.log(`${data.length} entries saved to DB`);
+  event.sender.send('saved', data);
+});
+
+ipcMain.on('clear-db', (event) => {
+  settings.set('pastParticipants', []);
+  console.log('DB purged');
 });

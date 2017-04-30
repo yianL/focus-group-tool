@@ -179,6 +179,7 @@
     "classnames": "^2.2.5",
     "csv": "^1.1.1",
     "electron-debug": "^1.1.0",
+    "electron-settings": "^3.0.14",
     "extract-text-webpack-plugin": "^2.0.0",
     "font-awesome": "^4.7.0",
     "react": "^15.4.2",

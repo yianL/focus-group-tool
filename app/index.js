@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import { hashHistory } from 'react-router';
 import { AppContainer } from 'react-hot-loader';
 import { syncHistoryWithStore } from 'react-router-redux';
+import { ipcRenderer } from 'electron';
 
 import Root from './containers/Root';
 import configureStore from './store/configureStore';
@@ -29,3 +30,9 @@ if (module.hot) {
     );
   });
 }
+
+// DEV MODE SECRET TOOLS
+window.letMePurgeTheDB = () => {
+  ipcRenderer.send('clear-db');
+};
+

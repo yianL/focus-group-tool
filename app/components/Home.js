@@ -31,7 +31,16 @@ export default class Home extends Component {
   componentWillMount() {
     const { loadDataSet, loadState } = this.props;
     ipcRenderer.on('file-loaded', (event, data) => {
-      loadDataSet(data);
+      loadDataSet(data.candidates);
+
+      if (data.filteredOut.length > 0) {
+        let message = 'The following email has been filtered out because they are duplicates/past participants:\n';
+
+        data.filteredOut.forEach((person) => {
+          message += `- ${person[COLUMNSBYID.email.index - 1]}\n`;
+        });
+        window.alert(message);
+      }
     });
 
     ipcRenderer.on('state-loaded', (event, state) => {

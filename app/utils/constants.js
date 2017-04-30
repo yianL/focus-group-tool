@@ -286,8 +286,11 @@ const COLUMNS = [
   },
 ];
 
-const COLUMNSBYID = COLUMNS.reduce((prev, current) => {
-  prev[current.name] = current;
+const COLUMNSBYID = COLUMNS.reduce((prev, current, index) => {
+  prev[current.name] = {
+    ...current,
+    index,
+  };
   return prev;
 }, {});
 
