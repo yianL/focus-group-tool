@@ -18,3 +18,7 @@ margin: 10px 0;
   padding: 1px 10px;
   cursor: default;
 }
+
+.filterList li i {
+  margin-left: 5px;
+}

@@ -209,6 +209,7 @@ const COLUMNS = [
     width: WIDTH.boolean,
     name: 'gender',
     filter: true,
+    caseSensitive: true,
   },
   {
     header: 'Married',
@@ -285,6 +286,11 @@ const COLUMNS = [
   },
 ];
 
+const COLUMNSBYID = COLUMNS.reduce((prev, current) => {
+  prev[current.name] = current;
+  return prev;
+}, {});
+
 const NAME2LABEL = COLUMNS.reduce((prev, current) => {
   prev[current.name] = current.header;
   return prev;
@@ -294,6 +300,7 @@ export default {
   STATES,
   WIDTH,
   COLUMNS,
+  COLUMNSBYID,
   NAME2LABEL,
   DEMOGRAPHIC_METRICS,
 };

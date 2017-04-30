@@ -9,7 +9,7 @@ import {
   REMOVE_FILTER,
 } from '../actions/candidates';
 import { LOAD_STATE } from '../actions/ui';
-import { COLUMNS, STATES } from '../utils/constants';
+import { COLUMNS, COLUMNSBYID, STATES } from '../utils/constants';
 
 const InitialState = {
   data: [],
@@ -105,11 +105,12 @@ export default function candidates(state = InitialState, action) {
 
     case ADD_FILTER: {
       const { name, value } = action.payload;
+      const { caseSensitive } = COLUMNSBYID[name];
       const { filters } = state;
 
       return {
         ...state,
-        filters: [...filters.filter(f => f.name !== name), { name, value }],
+        filters: [...filters.filter(f => f.name !== name), { name, value, caseSensitive }],
       };
     }
 

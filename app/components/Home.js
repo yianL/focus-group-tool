@@ -17,7 +17,7 @@ import {
 import ResponseTable from './ResponseTable';
 import FocusGroupTable from './FocusGroupTable';
 import ActiveFilters from './ActiveFilters';
-import { COLUMNS } from '../utils/constants';
+import { COLUMNS, COLUMNSBYID } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
 import { calculateUnmetCriteria } from '../utils/algorithms';
 import styles from './Home.css';
@@ -77,7 +77,7 @@ export default class Home extends Component {
       addFilter,
       focusGroup,
       focusGroupMeta,
-      removeFromGroup,
+      markAsUnavailable,
     } = this.props;
 
     const mismatches = calculateUnmetCriteria(focusGroup, focusGroupMeta.constraintObject);
@@ -115,7 +115,7 @@ export default class Home extends Component {
         <FocusGroupTable
           list={focusGroup}
           constraints={focusGroupMeta.constraints}
-          removeFromGroup={removeFromGroup}
+          markAsUnavailable={markAsUnavailable}
         />
       </div>
     );

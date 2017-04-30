@@ -26,8 +26,11 @@ body {
 
 i.action {
   cursor: pointer;
-  margin-left: 5px;
   opacity: 0.6;
+}
+
+i.action:not(:first-child) {
+  margin-left: 5px;
 }
 
 i.action:hover {

@@ -90,7 +90,7 @@ class FocusGroupTable extends PureComponent {
     const columnName = column.name;
 
     if (columnIndex === 0) {
-      const { removeFromGroup } = this.props;
+      const { markAsUnavailable } = this.props;
       return (
         <div
           className={styles.Cell}
@@ -100,7 +100,7 @@ class FocusGroupTable extends PureComponent {
           <i
             className="fa fa-user-times action"
             title="Remove from group"
-            onClick={() => removeFromGroup(datum.id)}
+            onClick={() => markAsUnavailable(datum.id)}
           />
         </div>
       );

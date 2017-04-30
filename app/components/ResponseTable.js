@@ -49,6 +49,15 @@ class ResponseTable extends PureComponent {
   constructor(props) {
     super(props);
     this.state = InitialState;
+    this.shouldMarkAllUnavailable = props.list.reduce(
+      (prev, current) => prev || current.state === STATES.DEFAULT
+    , false);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.shouldMarkAllUnavailable = nextProps.list.reduce(
+      (prev, current) => prev || current.state === STATES.DEFAULT
+    , false);
   }
 
   onImportButtonClick = () => {
@@ -118,6 +127,27 @@ class ResponseTable extends PureComponent {
     const column = COLUMNS[columnIndex];
 
     if (rowIndex === 0) {
+      if (columnIndex === 0) {
+        return (
+          <div
+            className={styles.Cell}
+            key={key}
+            style={style}
+          >
+            {this.shouldMarkAllUnavailable && (
+              <Button
+                size="sm"
+                color="danger"
+                onClick={this.handleRemoveAll}
+                title="Mark all as unavailable"
+              >
+                <i className="fa fa-fw fa-ban" />
+              </Button>
+            )}
+          </div>
+        );
+      }
+
       return (
         <div
           className={styles.Cell}
@@ -164,7 +194,7 @@ class ResponseTable extends PureComponent {
             />
 
           )}
-          {datum.state !== STATES.UNAVAILABLE && (
+          {datum.state === STATES.DEFAULT && (
             <i
               className="fa fa-ban action"
               title="Mark as unavailable"
@@ -191,6 +221,16 @@ class ResponseTable extends PureComponent {
         {datum[columnName]}
       </div>
     );
+  }
+
+  handleRemoveAll = () => {
+    const {
+      list,
+      markAsUnavailable,
+    } = this.props;
+
+    list.filter(person => person.state === STATES.DEFAULT)
+      .forEach(person => markAsUnavailable(person.id));
   }
 
   toggleFilterOption = (e) => {

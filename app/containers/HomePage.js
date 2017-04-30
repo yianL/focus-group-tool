@@ -15,8 +15,9 @@ const getFilteredCandidates = (state) => {
       return prev.filter(person => value.includes(person[name]));
     }
 
-    const valueToCompare = value.toLowerCase();
-    return prev.filter(person => person[name].toLowerCase().includes(valueToCompare));
+    return current.caseSensitive
+      ? prev.filter(person => person[name].includes(value))
+      : prev.filter(person => person[name].toLowerCase().includes(value.toLowerCase()));
   }, data);
 };
 
