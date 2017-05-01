@@ -1,7 +1,8 @@
 // @flow
 import React, { PropTypes } from 'react';
 import { push } from 'react-router-redux';
-import { Button, Table, Nav, Navbar, NavItem, Alert } from 'reactstrap';
+import { Button, Table, Nav, Navbar, NavItem } from 'reactstrap';
+import Plottable from 'plottable';
 import { ipcRenderer } from 'electron';
 import { COLUMNS, DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
@@ -17,6 +18,7 @@ export default class Home extends React.Component {
     this.state = {
       showDemographicSummary: false,
     };
+    this.charts = {};
   }
 
   componentWillMount() {
@@ -28,6 +30,17 @@ export default class Home extends React.Component {
       });
       window.alert(message);
     });
+  }
+
+  componentDidUpdate(prevProp, prevState) {
+    const { showDemographicSummary } = this.state;
+    if (prevState.showDemographicSummary !== showDemographicSummary && !showDemographicSummary) {
+      this.destroyCharts();
+    }
+  }
+
+  componentWillUnmount() {
+    this.destroyCharts();
   }
 
   onExportData = () => {
@@ -59,6 +72,42 @@ export default class Home extends React.Component {
     const { columns } = DEMOGRAPHIC_METRICS[key];
     const counts = columns.map((col) =>
       group.filter(person => person[col.name].includes(col.value)).length);
+    const chartData = counts.map((c, index) => ({
+      name: columns[index].value,
+      count: c,
+    }));
+
+    setTimeout(() => {
+      const dataset = new Plottable.Dataset(chartData);
+
+      if (this.charts[key]) {
+        const oldDataset = this.charts[key].dataset;
+        setTimeout(() => {
+          this.charts[key].dataset = dataset;
+          this.charts[key].chart
+            .removeDataset(oldDataset)
+            .addDataset(dataset)
+            .redraw();
+        });
+        return;
+      }
+
+      const colorScale = new Plottable.Scales.Color();
+      this.charts[key] = {
+        dataset,
+        chart: new Plottable.Plots.Pie()
+          .attr('fill', d => d.name, colorScale)
+          .addDataset(dataset)
+          .sectorValue(d => d.count)
+          .labelsEnabled(true)
+          // .labelFormatter(function(n){ return '$ ' + n ;})
+          .renderTo(`div#chart-${key}`),
+        legend: new Plottable.Components.Legend(colorScale)
+          .xAlignment('left')
+          .yAlignment('center')
+          .renderTo(`div#legend-${key}`)
+      };
+    }, 100);
 
     return (
       <Table striped>
@@ -98,6 +147,15 @@ export default class Home extends React.Component {
     focusGroup.forEach(person => checkPersonIn(person.id, activeGroup));
   }
 
+
+  destroyCharts = () => {
+    Object.keys(this.charts).forEach((key) => {
+      this.charts[key].chart.destroy();
+      this.charts[key].legend.destroy();
+      delete this.charts[key];
+    });
+  }
+
   uncheckAllIn = () => {
     const { focusGroup, activeGroup, uncheckPersonIn } = this.props;
     focusGroup.forEach(person => uncheckPersonIn(person.id, activeGroup));
@@ -116,6 +174,14 @@ export default class Home extends React.Component {
     return Object.keys(DEMOGRAPHIC_METRICS).map((key) => (
       <div className={styles.contraintSet} key={key}>
         <h5>{capitalize(key)}</h5>
+        <div className={styles.chart}>
+          <div className={styles.chartWrapper}>
+            <div id={`chart-${key}`} />
+          </div>
+          <div className={styles.legendWrapper}>
+            <div id={`legend-${key}`} />
+          </div>
+        </div>
         {this.getDemographicTable(key, group)}
       </div>
       ));
