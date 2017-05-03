@@ -34,7 +34,16 @@ export default function candidates(state = InitialState, action) {
 
           if (column.filter === true) {
             const options = filterOptions[column.name] || [];
-            if (!options.includes(d)) {
+
+            if (column.name === 'availability') {
+              const availabilities = d.split(',').map(s => s.trim());
+              availabilities.forEach(availability => {
+                if (!options.includes(availability)) {
+                  options.push(d);
+                }
+              });
+              filterOptions[column.name] = options.sort();
+            } else if (!options.includes(d)) {
               options.push(d);
               filterOptions[column.name] = options.sort();
             }

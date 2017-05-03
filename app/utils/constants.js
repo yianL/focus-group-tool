@@ -283,6 +283,7 @@ const COLUMNS = [
     width: WIDTH.medium,
     name: 'availability',
     filter: true,
+    multipleChoice: true,
   },
 ];
 

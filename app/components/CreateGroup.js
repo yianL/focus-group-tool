@@ -23,7 +23,9 @@ export default class CreateGroup extends Component {
     const { constraints, groupSize } = this.props;
     const { columns } = DEMOGRAPHIC_METRICS[key];
     const constraint = constraints[key] || [];
-    const sum = constraint.reduce((prev, current) => isNaN(current) ? prev : prev + current, 0);
+    const sum = constraint.reduce((prev, current) =>
+      isNaN(current) ? prev : prev + Math.round(current * groupSize / 100), 0);
+    const percentileSum = constraint.reduce((acc, cur) => isNaN(cur) ? acc : acc + cur, 0).toFixed(1);
 
     return (
       <Table striped>
@@ -39,15 +41,9 @@ export default class CreateGroup extends Component {
         <tbody>
           <tr>
             <td>Count</td>
-            {columns.map((col, index) => (
-              <td key={`${col.name}|${index}`}>
-                <input
-                  className={styles.countField}
-                  type="number"
-                  name={`${col.name}|${index}`}
-                  value={constraint[index]}
-                  onChange={this.handleConstraintChange}
-                />
+            {columns.map((_, index) => (
+              <td key={index}>
+                {isNaN(constraint[index]) ? '--' : Math.round(constraint[index] * groupSize / 100)}
               </td>
             ))}
             <td>
@@ -56,12 +52,18 @@ export default class CreateGroup extends Component {
           </tr>
           <tr>
             <td>Percentile</td>
-            {columns.map((_, index) => (
-              <td key={index}>
-                {isNaN(constraint[index]) ? '--' : `${(constraint[index] * 100 / groupSize).toFixed(1)}%`}
+            {columns.map((col, index) => (
+              <td key={`${col.name}|${index}`}>
+                <input
+                  className={styles.percentileField}
+                  type="number"
+                  name={`${col.name}|${index}`}
+                  value={constraint[index]}
+                  onChange={this.handleConstraintChange}
+                />
               </td>
             ))}
-            <td>{(sum * 100 / groupSize).toFixed(1)}%</td>
+            <td>{`${percentileSum}%`}</td>
           </tr>
         </tbody>
       </Table>
@@ -87,12 +89,14 @@ export default class CreateGroup extends Component {
       createGroup,
     } = this.props;
 
+    // TODO: change count here, check for null
     const constraintObject = Object.keys(constraints).reduce((prev, current) => (
       prev.concat(
-        constraints[current].map((count, index) => ({
+        constraints[current].map((percentile, index) => ({
           category: current,
           target: DEMOGRAPHIC_METRICS[current].columns[index].value,
-          count,
+          count: percentile === null ? null : Math.round(percentile * groupSize / 100),
+          percentile,
         }))
       )
     ), [])

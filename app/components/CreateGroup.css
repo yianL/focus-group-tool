@@ -48,8 +48,9 @@
   width: 15em;
 }
 
-.countField {
-  width: 4em;
+.percentileField {
+  width: 3.2em;
+  text-align: right;
 }
 
 .contraintSet {

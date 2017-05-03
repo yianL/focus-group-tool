@@ -2,7 +2,7 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Home from '../components/Home';
-import { STATES } from '../utils/constants';
+import { STATES, COLUMNSBYID } from '../utils/constants';
 import * as CandidateActions from '../actions/candidates';
 import * as UIActions from '../actions/ui';
 
@@ -12,7 +12,9 @@ const getFilteredCandidates = (state) => {
     const { name, value } = current;
 
     if (Array.isArray(value)) {
-      return prev.filter(person => value.includes(person[name]));
+      return COLUMNSBYID[name].multipleChoice
+        ? prev.filter(person => value.some(v => person[name].includes(v)))
+        : prev.filter(person => value.includes(person[name]));
     }
 
     return current.caseSensitive
