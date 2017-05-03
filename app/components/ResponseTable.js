@@ -208,6 +208,11 @@ class ResponseTable extends PureComponent {
               onClick={() => markAsAvailable(datum.id)}
             />
           )}
+          {datum.state.includes(STATES.CHOSEN) && (
+            <span title={datum.state.substr(7)}>
+              Group
+            </span>
+          )}
         </div>
       );
     }

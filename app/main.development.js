@@ -150,9 +150,10 @@ ipcMain.on('open-save-dialog', (event, data) =>
 );
 
 ipcMain.on('export-csv', (event, data) => {
+  const { groupName, group } = data;
   dialog.showSaveDialog({
     title: 'Save Focus Group to CSV',
-    defaultPath: 'focusGroup.csv',
+    defaultPath: `${groupName || 'focusGroup'}.csv`,
     filters: [{
       name: 'CSV Files',
       extensions: ['csv'],
@@ -160,7 +161,7 @@ ipcMain.on('export-csv', (event, data) => {
   }, (filename) => {
     if (!filename) { return; }
 
-    stringify(data, (err, output) => {
+    stringify(group, (err, output) => {
       if (err) {
         console.error('Error stringifying focus group', err);
         return;

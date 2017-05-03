@@ -24,11 +24,11 @@ export default function candidates(state = InitialState, action) {
 
     case CREATE_GROUP: {
       // set newly created group to active
-      const { session } = action.payload;
+      const { groupName } = action.payload;
 
       return {
         ...state,
-        activeGroup: session,
+        activeGroup: groupName,
       };
     }
 

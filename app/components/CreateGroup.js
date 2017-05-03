@@ -1,7 +1,7 @@
 // @flow
 import React, { PropTypes, Component } from 'react';
 import { push } from 'react-router-redux';
-import { Button, Table, Nav, Navbar, NavItem, Alert } from 'reactstrap';
+import { Button, Table, Nav, Navbar, NavItem, Alert, FormGroup, Label, Input } from 'reactstrap';
 import { DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
 import { selectFocusGroup, getAccuracyOfFocusGroup } from '../utils/algorithms';
@@ -11,6 +11,13 @@ export default class CreateGroup extends Component {
   static contextTypes = {
     store: PropTypes.any,
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      groupName: '',
+    };
+  }
 
   getConfigurationTable = (key) => {
     const { constraints, groupSize } = this.props;
@@ -70,10 +77,11 @@ export default class CreateGroup extends Component {
 
   handleCreate = () => {
     const { store } = this.context;
+    const { groupName } = this.state;
     const {
       data,
       constraints,
-      session,
+      availability,
       groupSize,
       addToGroup,
       createGroup,
@@ -90,19 +98,26 @@ export default class CreateGroup extends Component {
     ), [])
     .filter(constraint => Number.isInteger(constraint.count));
 
-    const availableGroup = data.filter(person => person.availability.includes(session));
+    const availableGroup = data.filter(person =>
+      availability.reduce((prev, curr) => prev || person.availability.includes(curr), false)
+    );
     const focusGroup = selectFocusGroup(availableGroup, constraintObject, groupSize);
     const accuracy = getAccuracyOfFocusGroup(focusGroup, constraintObject);
     console.log('Group created, accuracy:', accuracy);
 
     // set members of the group as selected
     Object.keys(focusGroup).forEach((key) => {
-      addToGroup(focusGroup[key].id, session);
+      addToGroup(focusGroup[key].id, groupName);
     });
 
-    createGroup(session, constraintObject);
+    createGroup(groupName, availability, constraintObject);
 
     store.dispatch(push('/'));
+  }
+
+  handleGroupNameChange = (event) => {
+    const { value } = event.target;
+    this.setState({ groupName: value });
   }
 
   handleGroupSizeChange = (event) => {
@@ -112,11 +127,14 @@ export default class CreateGroup extends Component {
     setGroupSize(valueAsNumber);
   }
 
-  handleSessionChange = (event) => {
-    const { setSession } = this.props;
+  handleAvailabilityChange = (event) => {
+    const { setAvailability, availability } = this.props;
     const { value } = event.target;
-
-    setSession(value);
+    if (availability.includes(value)) {
+      setAvailability(availability.filter(a => a !== value));
+    } else {
+      setAvailability(availability.concat([value]));
+    }
   }
 
   gotoHome = () => this.context.store.dispatch(push('/'));
@@ -124,9 +142,13 @@ export default class CreateGroup extends Component {
   render() {
     const {
       groupSize,
-      session,
       availability,
+      availabilities,
     } = this.props;
+
+    const {
+      groupName,
+    } = this.state;
 
     return (
       <div className={styles.createGroup}>
@@ -142,6 +164,16 @@ export default class CreateGroup extends Component {
           </Nav>
         </Navbar>
         <div className="container">
+          <div className={styles.groupName}>
+            <h5>
+              Group Name:
+              <input
+                name="groupName"
+                value={groupName}
+                onChange={this.handleGroupNameChange}
+              />
+            </h5>
+          </div>
           <div className={styles.groupSize}>
             <h5>
               Group Size:
@@ -161,18 +193,20 @@ export default class CreateGroup extends Component {
             ))}
           <div className={styles.groupSize}>
             <h5>
-              Session:
-              <select
-                name="session"
-                value={session}
-                defaultValue=""
-                onChange={this.handleSessionChange}
-              >
-                <option disabled value=""> -- Select a session -- </option>
-                {availability.map(o => (
-                  <option value={o}>{o}</option>
-                ))}
-              </select>
+              Availability:
+              {availabilities.map(o => (
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      onChange={this.handleAvailabilityChange}
+                      value={o}
+                      checked={availability.includes(o)}
+                    />
+                    {` ${o}`}
+                  </Label>
+                </FormGroup>
+              ))}
             </h5>
           </div>
           <div className="actionBar">
@@ -180,14 +214,19 @@ export default class CreateGroup extends Component {
             <Button
               color="primary"
               onClick={this.handleCreate}
-              disabled={!session}
+              disabled={availability.length === 0 || !groupName}
             >
               Create
             </Button>
           </div>
-          {!session && (
+          {availability.length === 0 && (
             <Alert color="warning">
-              Please select a session for this group.
+              Please select time availability for this group.
+            </Alert>
+          )}
+          {!groupName && (
+            <Alert color="warning">
+              Please give the group a name.
             </Alert>
           )}
         </div>

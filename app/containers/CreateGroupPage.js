@@ -9,7 +9,7 @@ import { STATES } from '../utils/constants';
 const availableCandidates = (state) =>
   state.candidates.data.filter(candidate => candidate.state === STATES.DEFAULT);
 
-const getAvailability = (state) => {
+const getAvailabilities = (state) => {
   const { filterOptions = {} } = state.candidates;
   const { availability = ['The only session'] } = filterOptions;
   return availability.filter(a => !a.includes(','));
@@ -17,8 +17,8 @@ const getAvailability = (state) => {
 
 const mapStateToProps = (state) => ({
   data: availableCandidates(state),
-  availability: getAvailability(state),
-  session: state.focusGroup.session,
+  availabilities: getAvailabilities(state),
+  availability: state.focusGroup.availability,
   groupSize: state.focusGroup.groupSize,
   constraints: state.focusGroup.constraints,
 });

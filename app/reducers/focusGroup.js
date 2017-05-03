@@ -1,7 +1,7 @@
 // @flow
 import {
   SET_GROUP_SIZE,
-  SET_SESSION,
+  SET_AVAILABILITY,
   SET_CONSTRAINT,
   CREATE_GROUP,
   CHECK_PERSON_IN,
@@ -14,7 +14,7 @@ import {
 
 const InitialState = {
   groupSize: 15,
-  session: null,
+  availability: [],
   constraints: {},
 };
 
@@ -29,22 +29,23 @@ export default function candidates(state = InitialState, action) {
       };
     }
 
-    case SET_SESSION: {
-      const { session } = action.payload;
+    case SET_AVAILABILITY: {
+      const { availability } = action.payload;
 
       return {
         ...state,
-        session,
+        availability,
       };
     }
 
     case CREATE_GROUP: {
-      const { session, constraintObject } = action.payload;
+      const { groupName, availability, constraintObject } = action.payload;
 
       return {
         ...state,
-        [`__${session}`]: {
-          session,
+        [`__${groupName}`]: {
+          name: groupName,
+          availability,
           constraintObject,
           constraints: state.constraints,
           groupSize: state.groupSize,
@@ -54,8 +55,8 @@ export default function candidates(state = InitialState, action) {
     }
 
     case CHECK_PERSON_IN: {
-      const { id, session } = action.payload;
-      const groupName = `__${session}`;
+      const { id } = action.payload;
+      const groupName = `__${action.payload.groupName}`;
       const focusGroup = state[groupName];
       return {
         ...state,
@@ -67,8 +68,8 @@ export default function candidates(state = InitialState, action) {
     }
 
     case UNCHECK_PERSON_IN: {
-      const { id, session } = action.payload;
-      const groupName = `__${session}`;
+      const { id } = action.payload;
+      const groupName = `__${action.payload.groupName}`;
       const focusGroup = state[groupName];
       return {
         ...state,

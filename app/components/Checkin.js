@@ -44,7 +44,7 @@ export default class Home extends React.Component {
   }
 
   onExportData = () => {
-    const { focusGroup, checkInStatus } = this.props;
+    const { focusGroup, checkInStatus, activeGroup } = this.props;
     const exportColumns = COLUMNS.slice(1);
     const focusGroupArray = [
       exportColumns.map(col => col.header)
@@ -55,7 +55,10 @@ export default class Home extends React.Component {
         focusGroupArray.push(exportColumns.map(col => person[col.name]));
       });
 
-    ipcRenderer.send('export-csv', focusGroupArray);
+    ipcRenderer.send('export-csv', {
+      groupName: activeGroup,
+      group: focusGroupArray
+    });
   }
 
   onSaveAttendees = () => {
@@ -201,7 +204,7 @@ export default class Home extends React.Component {
       <div>
         <Navbar color="inverse" inverse light toggleable>
           <span className="navbar-brand">
-            {`Group Check-in (Session: ${activeGroup})`}
+            {`Group Check-in: ${activeGroup}`}
           </span>
           <Nav className="ml-auto" navbar>
             <NavItem>

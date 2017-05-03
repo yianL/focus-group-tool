@@ -49,7 +49,7 @@ export default class Home extends Component {
   }
 
   onExportData = () => {
-    const { focusGroup } = this.props;
+    const { focusGroup, focusGroupMeta } = this.props;
     const exportColumns = COLUMNS.slice(1);
     const focusGroupArray = [
       exportColumns.map(col => col.header)
@@ -59,8 +59,10 @@ export default class Home extends Component {
       focusGroupArray.push(exportColumns.map(col => person[col.name]));
     });
 
-    console.log('export', focusGroupArray);
-    ipcRenderer.send('export-csv', focusGroupArray);
+    ipcRenderer.send('export-csv', {
+      groupName: focusGroupMeta.name,
+      group: focusGroupArray,
+    });
   }
 
   onLoadButtonClick = () => {
@@ -95,8 +97,8 @@ export default class Home extends Component {
       <div>
         <Row className="mt-2 mb-3">
           <Col>
-            <div>Group Summary</div>
             <div>{`Size: ${focusGroup.length}`}</div>
+            <div>{`Availability: ${focusGroupMeta.availability.join(', ')}`}</div>
             <span>Unmet Criteria: </span>
             <ul className={styles.mismatchList}>
               {mismatches.length > 0 ? mismatches.map((mismatch) => {
