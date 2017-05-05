@@ -17,8 +17,15 @@ const getCheckinStatus = (state) => {
   return state.focusGroup[groupName].checkedIn;
 };
 
+const getFocusGroupMeta = (state) => {
+  const { activeGroup } = state.ui;
+  const chosen = `__${activeGroup}`;
+  return activeGroup ? state.focusGroup[chosen] : {};
+};
+
 const mapStateToProps = (state) => ({
   focusGroup: getFocusGroup(state),
+  focusGroupMeta: getFocusGroupMeta(state),
   activeGroup: state.ui.activeGroup,
   checkInStatus: getCheckinStatus(state),
 });

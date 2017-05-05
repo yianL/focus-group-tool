@@ -73,8 +73,11 @@ export default class Home extends React.Component {
   getDemographicTable = (key, group) => {
     const groupSize = group.length;
     const { columns } = DEMOGRAPHIC_METRICS[key];
+    const { focusGroupMeta } = this.props;
+    const constraints = focusGroupMeta.constraints[key] || [];
     const counts = columns.map((col) =>
       group.filter(person => person[col.name].includes(col.value)).length);
+    const percentile = counts.map(c => (c * 100 / groupSize).toFixed(1));
     const chartData = counts.map((c, index) => ({
       name: columns[index].value,
       count: c,
@@ -135,7 +138,26 @@ export default class Home extends React.Component {
             <td>Percentile</td>
             {columns.map((_, index) => (
               <td>
-                {`${(counts[index] * 100 / groupSize).toFixed(1)}%`}
+                {`${percentile[index]}%`}
+              </td>
+            ))}
+            <td />
+          </tr>
+          <tr>
+            <td>Target</td>
+            {columns.map((_, index) => (
+              <td>
+                {constraints[index] ? `${constraints[index].toFixed(1)}%` : '--'}
+              </td>
+            ))}
+            <td />
+          </tr>
+          <tr>
+            <td>Offset</td>
+            {columns.map((_, index) => (
+              <td>
+                {constraints[index] && (percentile[index] > constraints[index] ? '+' : '-')}
+                {constraints[index] ? `${Math.abs(percentile[index] - constraints[index]).toFixed(1)}%` : '--'}
               </td>
             ))}
             <td />
