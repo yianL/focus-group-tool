@@ -3,6 +3,7 @@ import {
   SET_GROUP_SIZE,
   SET_AVAILABILITY,
   SET_CONSTRAINT,
+  SET_CONSTRAINT_PRESET,
   CREATE_GROUP,
   CHECK_PERSON_IN,
   UNCHECK_PERSON_IN,
@@ -15,6 +16,7 @@ import {
 const InitialState = {
   groupSize: 15,
   availability: [],
+  zipCodes: undefined,
   constraints: {},
 };
 
@@ -43,12 +45,15 @@ export default function candidates(state = InitialState, action) {
 
       return {
         ...state,
+        constraints: {},
+        zipCodes: undefined,
         [`__${groupName}`]: {
           name: groupName,
           availability,
           constraintObject,
           constraints: state.constraints,
           groupSize: state.groupSize,
+          zipCodes: state.zipCodes,
           checkedIn: [],
         },
       };
@@ -86,7 +91,7 @@ export default function candidates(state = InitialState, action) {
 
       if (!newConstraints[name]) {
         newConstraints[name] = new Array(DEMOGRAPHIC_METRICS[name].columns.length);
-        newConstraints[name].fill(undefined);
+        newConstraints[name].fill('');
       }
 
       newConstraints[name][index] = amount;
@@ -94,6 +99,16 @@ export default function candidates(state = InitialState, action) {
       return {
         ...state,
         constraints: newConstraints,
+      };
+    }
+
+    case SET_CONSTRAINT_PRESET: {
+      const { preset } = action.payload;
+
+      return {
+        ...state,
+        zipCodes: preset.zipCodes,
+        constraints: { ...preset.constraints },
       };
     }
 

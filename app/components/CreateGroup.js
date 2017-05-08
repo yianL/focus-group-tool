@@ -2,7 +2,7 @@
 import React, { PropTypes, Component } from 'react';
 import { push } from 'react-router-redux';
 import { Button, Table, Nav, Navbar, NavItem, Alert, FormGroup, Label, Input } from 'reactstrap';
-import { DEMOGRAPHIC_METRICS } from '../utils/constants';
+import { DEMOGRAPHIC_METRICS, DEFAULT_CONSTRAINTS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
 import { selectFocusGroup, getAccuracyOfFocusGroup } from '../utils/algorithms';
 import styles from './CreateGroup.css';
@@ -24,8 +24,8 @@ export default class CreateGroup extends Component {
     const { columns } = DEMOGRAPHIC_METRICS[key];
     const constraint = constraints[key] || [];
     const sum = constraint.reduce((prev, current) =>
-      isNaN(current) ? prev : prev + Math.round(current * groupSize / 100), 0);
-    const percentileSum = constraint.reduce((acc, cur) => isNaN(cur) ? acc : acc + cur, 0).toFixed(1);
+      Number.isFinite(current) ? prev + Math.round(current * groupSize / 100) : prev, 0);
+    const percentileSum = constraint.reduce((acc, cur) => Number.isFinite(cur) ? acc + cur : acc, 0).toFixed(1);
 
     return (
       <Table striped>
@@ -43,7 +43,7 @@ export default class CreateGroup extends Component {
             <td>Count</td>
             {columns.map((_, index) => (
               <td key={index}>
-                {isNaN(constraint[index]) ? '--' : Math.round(constraint[index] * groupSize / 100)}
+                {Number.isFinite(constraint[index]) ? Math.round(constraint[index] * groupSize/ 100) : '--'}
               </td>
             ))}
             <td>
@@ -85,6 +85,7 @@ export default class CreateGroup extends Component {
       constraints,
       availability,
       groupSize,
+      zipCodes,
       addToGroup,
       createGroup,
     } = this.props;
@@ -95,7 +96,7 @@ export default class CreateGroup extends Component {
         constraints[current].map((percentile, index) => ({
           category: current,
           target: DEMOGRAPHIC_METRICS[current].columns[index].value,
-          count: percentile === null ? null : Math.round(percentile * groupSize / 100),
+          count: Number.isFinite(percentile) ? Math.round(percentile * groupSize / 100) : null,
           percentile,
         }))
       )
@@ -104,6 +105,8 @@ export default class CreateGroup extends Component {
 
     const availableGroup = data.filter(person =>
       availability.reduce((prev, curr) => prev || person.availability.includes(curr), false)
+    ).filter(person =>
+      !zipCodes || zipCodes.includes(person.zipCode)
     );
     const focusGroup = selectFocusGroup(availableGroup, constraintObject, groupSize);
     const accuracy = getAccuracyOfFocusGroup(focusGroup, constraintObject);
@@ -139,6 +142,12 @@ export default class CreateGroup extends Component {
     } else {
       setAvailability(availability.concat([value]));
     }
+  }
+
+  handlePresetChange = (event) => {
+    const { setConstraintPreset } = this.props;
+    const { value } = event.target;
+    setConstraintPreset(DEFAULT_CONSTRAINTS[value]);
   }
 
   gotoHome = () => this.context.store.dispatch(push('/'));
@@ -189,12 +198,6 @@ export default class CreateGroup extends Component {
               />
             </h5>
           </div>
-          {Object.keys(DEMOGRAPHIC_METRICS).map((key) => (
-            <div className={styles.contraintSet} key={key}>
-              <h5>{capitalize(key)}</h5>
-              {this.getConfigurationTable(key)}
-            </div>
-            ))}
           <div className={styles.groupSize}>
             <h5>
               Availability:
@@ -213,6 +216,26 @@ export default class CreateGroup extends Component {
               ))}
             </h5>
           </div>
+          <div className={styles.groupSize}>
+            <h5>
+              Demographic presets:
+              <select
+                onChange={this.handlePresetChange}
+                defaultValue=""
+              >
+                <option disabled value=""> Select a preset </option>
+                {Object.keys(DEFAULT_CONSTRAINTS).map(o => (
+                  <option value={DEFAULT_CONSTRAINTS[o].name}>{DEFAULT_CONSTRAINTS[o].label}</option>
+                ))}
+              </select>
+            </h5>
+          </div>
+          {Object.keys(DEMOGRAPHIC_METRICS).map((key) => (
+            <div className={styles.contraintSet} key={key}>
+              <h5>{capitalize(key)}</h5>
+              {this.getConfigurationTable(key)}
+            </div>
+          ))}
           <div className="actionBar">
             <Button onClick={this.gotoHome}>Cancel</Button>
             <Button

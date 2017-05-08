@@ -21,6 +21,7 @@ const mapStateToProps = (state) => ({
   availability: state.focusGroup.availability,
   groupSize: state.focusGroup.groupSize,
   constraints: state.focusGroup.constraints,
+  zipCodes: state.focusGroup.zipCodes,
 });
 
 const mapDispatchToProps = (dispatch) => ({

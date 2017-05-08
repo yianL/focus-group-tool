@@ -1,6 +1,7 @@
 // @flow
 export const SET_GROUP_SIZE = 'SET_GROUP_SIZE';
 export const SET_CONSTRAINT = 'SET_CONSTRAINT';
+export const SET_CONSTRAINT_PRESET = 'SET_CONSTRAINT_PRESET';
 export const SET_AVAILABILITY = 'SET_AVAILABILITY';
 export const CREATE_GROUP = 'CREATE_GROUP';
 export const CHECK_PERSON_IN = 'CHECK_PERSON_IN';
@@ -24,6 +25,11 @@ export const createGroup = (groupName, availability, constraintObject) => ({
 export const setConstraint = (name, index, amount) => ({
   type: SET_CONSTRAINT,
   payload: { name, index, amount },
+});
+
+export const setConstraintPreset = (preset) => ({
+  type: SET_CONSTRAINT_PRESET,
+  payload: { preset },
 });
 
 export const checkPersonIn = (id, groupName) => ({
