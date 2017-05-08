@@ -3,7 +3,7 @@ import React, { PropTypes, Component } from 'react';
 import { push } from 'react-router-redux';
 import { Button, Table, Nav, Navbar, NavItem, Alert, FormGroup, Label, Input } from 'reactstrap';
 import { DEMOGRAPHIC_METRICS, DEFAULT_CONSTRAINTS } from '../utils/constants';
-import { capitalize } from '../utils/helpers';
+import { capitalize, getAvailableCandidates } from '../utils/helpers';
 import { selectFocusGroup, getAccuracyOfFocusGroup } from '../utils/algorithms';
 import styles from './CreateGroup.css';
 
@@ -90,7 +90,6 @@ export default class CreateGroup extends Component {
       createGroup,
     } = this.props;
 
-    // TODO: change count here, check for null
     const constraintObject = Object.keys(constraints).reduce((prev, current) => (
       prev.concat(
         constraints[current].map((percentile, index) => ({
@@ -103,11 +102,7 @@ export default class CreateGroup extends Component {
     ), [])
     .filter(constraint => Number.isInteger(constraint.count));
 
-    const availableGroup = data.filter(person =>
-      availability.reduce((prev, curr) => prev || person.availability.includes(curr), false)
-    ).filter(person =>
-      !zipCodes || zipCodes.includes(person.zipCode)
-    );
+    const availableGroup = getAvailableCandidates(data, availability, zipCodes);
     const focusGroup = selectFocusGroup(availableGroup, constraintObject, groupSize);
     const accuracy = getAccuracyOfFocusGroup(focusGroup, constraintObject);
     console.log('Group created, accuracy:', accuracy);

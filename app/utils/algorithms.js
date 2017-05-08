@@ -28,7 +28,7 @@ const getAccuracyOfFocusGroup = (group, constraints) => {
 // and replaces that person. If no swap, it returns the same group.
 //
 // Returns a focus group object.
-var tryPersonInGroup = (id, people, group, constraints) => {
+const tryPersonInGroup = (id, people, group, constraints) => {
   // Person is in group already
   if (group[id] != null) { return group; }
 
@@ -61,7 +61,7 @@ var tryPersonInGroup = (id, people, group, constraints) => {
 };
 
 // Returns a JS Object with random people using their 'index' as keys to identify them
-var grabRandomFocusGroup = (people, size) => {
+const grabRandomFocusGroup = (people, size) => {
   const grabbed = {};
   while (Object.keys(grabbed).length < size) {
     const index = getRandomInt(0, people.length);
@@ -71,7 +71,7 @@ var grabRandomFocusGroup = (people, size) => {
   return grabbed;
 };
 
-var getConstraintBounds = (constraints) => {
+const getConstraintBounds = (constraints) => {
   let size = 0;
   for (const constraint of constraints) { size += constraint.count; }
 
@@ -82,7 +82,7 @@ var getConstraintBounds = (constraints) => {
 // a set of constraints.
 // People Array: [ {age: "10-20", ...} ]
 // Constraints Array: [ {category: "age", target: "10-20", count: 4 } ]
-var scoreDataset = (people, constraints, getOffset = false) => {
+const scoreDataset = (people, constraints, getOffset = false) => {
   const group = Object.keys(people).reduce((prev, current) => prev.concat(people[current]), []);
   let score = 0;
 
@@ -111,7 +111,7 @@ const calculateUnmetCriteria = (people, constraints) => {
 
 // Returns the score for a given constraint, this is defined as the difference
 // between actual matches to a category and expected matches.
-var scoreConstraint = (people, constraint, getOffset = false) => {
+const scoreConstraint = (people, constraint, getOffset = false) => {
   let matches = 0;
 
   for (const person of people) {
@@ -126,7 +126,7 @@ var scoreConstraint = (people, constraint, getOffset = false) => {
 
 // Return true if a person matches the given constraint
 // Return false if a person fails a given constraint
-var personFitsConstraint = (person, constraint) => {
+const personFitsConstraint = (person, constraint) => {
   const category = constraint.category;
   const target = constraint.target;
   const actual = person[category];

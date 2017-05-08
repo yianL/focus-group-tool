@@ -41,7 +41,8 @@ const getFocusGroupMeta = (state) => {
 };
 
 const mapStateToProps = (state) => ({
-  data: getFilteredCandidates(state),
+  data: state.candidates.data,
+  filteredData: getFilteredCandidates(state),
   focusGroups: getFocusGroups(state),
   focusGroup: getFocusGroup(state),
   focusGroupMeta: getFocusGroupMeta(state),

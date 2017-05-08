@@ -14,3 +14,10 @@
 .mismatchList li:hover {
   text-decoration: underline;
 }
+
+.refillInput {
+  display: inline-block;
+  text-align: right;
+  margin: 0 10px;
+  width: 5em;
+}

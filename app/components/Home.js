@@ -12,14 +12,19 @@ import {
   NavLink,
   Row,
   Col,
+  Modal,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
 } from 'reactstrap';
 
 import ResponseTable from './ResponseTable';
 import FocusGroupTable from './FocusGroupTable';
 import ActiveFilters from './ActiveFilters';
 import { COLUMNS, COLUMNSBYID } from '../utils/constants';
-import { capitalize } from '../utils/helpers';
-import { calculateUnmetCriteria } from '../utils/algorithms';
+import { capitalize, getAvailableCandidates } from '../utils/helpers';
+import { calculateUnmetCriteria, selectFocusGroup, getAccuracyOfFocusGroup } from '../utils/algorithms';
+
 import styles from './Home.css';
 
 /* eslint-disable react/prop-types */
@@ -27,6 +32,13 @@ export default class Home extends Component {
   static contextTypes = {
     store: PropTypes.any,
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false,
+    };
+  }
 
   componentWillMount() {
     const { loadDataSet, loadState } = this.props;
@@ -74,6 +86,8 @@ export default class Home extends Component {
     ipcRenderer.send('open-save-dialog', store.getState());
   }
 
+  getRefillInputRef = ref => { this.refillInput = ref; }
+
   gotoFocusGroup = () => this.context.store.dispatch(push('/create'));
   gotoCheckin = () => this.context.store.dispatch(push('/checkin'));
 
@@ -83,6 +97,45 @@ export default class Home extends Component {
     setActiveGroup(value);
   }
 
+  handleRefillGroup = () => {
+    const groupSize = this.refillInput.valueAsNumber;
+    if (!groupSize) { return; }
+
+    const {
+      data,
+      addToGroup,
+      focusGroupMeta,
+    } = this.props;
+    const constraintObject = focusGroupMeta.constraintObject
+      .filter(co => !!co.offset)
+      .map(co => ({
+        ...co,
+        count: co.offset < 0 ? -1 * co.offset : 0,
+        offset: undefined
+      }));
+    const pool = getAvailableCandidates(data, focusGroupMeta.availability, focusGroupMeta.zipCodes);
+
+    const subGroup = selectFocusGroup(pool, constraintObject, groupSize);
+    let message = `${Object.keys(subGroup).length} new candidates added to group:\n`;
+
+    Object.keys(subGroup).forEach((key) => {
+      addToGroup(subGroup[key].id, focusGroupMeta.name);
+      message += `- ${subGroup[key].name}\n`;
+    });
+
+    window.alert(message);
+
+    this.setState({ showModal: false });
+  }
+
+  openRefillModal = () => {
+    this.setState({ showModal: true });
+  }
+
+  closeRefillModal = () => {
+    this.setState({ showModal: false });
+  }
+
   renderActiveGroup = () => {
     const {
       addFilter,
@@ -90,6 +143,7 @@ export default class Home extends Component {
       focusGroupMeta,
       markAsUnavailable,
     } = this.props;
+    const { showModal } = this.state;
 
     const mismatches = calculateUnmetCriteria(focusGroup, focusGroupMeta.constraintObject);
 
@@ -114,7 +168,10 @@ export default class Home extends Component {
               }) : 'None'}
             </ul>
           </Col>
-          <Col xs="3" className="d-flex justify-content-end">
+          <Col xs="4" className="d-flex justify-content-end">
+            <Button onClick={this.openRefillModal} className="mr-2">
+              Refill Group
+            </Button>
             <Button onClick={this.onExportData} className="mr-2">
               Export
             </Button>
@@ -123,11 +180,35 @@ export default class Home extends Component {
             </Button>
           </Col>
         </Row>
+
         <FocusGroupTable
           list={focusGroup}
           constraints={focusGroupMeta.constraints}
           markAsUnavailable={markAsUnavailable}
         />
+
+        <Modal
+          isOpen={showModal}
+          toggle={this.closeRefillModal}
+        >
+          <ModalHeader toggle={this.closeRefillModal}>
+            Refill Group
+          </ModalHeader>
+          <ModalBody>
+            Select
+            <input
+              className={styles.refillInput}
+              type="number"
+              defaultValue={0}
+              ref={this.getRefillInputRef}
+            />
+            more candidates into this group.
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.closeRefillModal}>Cancel</Button>{' '}
+            <Button color="primary" onClick={this.handleRefillGroup}>Ok</Button>
+          </ModalFooter>
+        </Modal>
       </div>
     );
   }
@@ -152,7 +233,7 @@ export default class Home extends Component {
 
   render() {
     const {
-      data,
+      filteredData,
       focusGroups,
       activeGroup,
       addToGroup,
@@ -168,7 +249,7 @@ export default class Home extends Component {
         <Navbar color="inverse" inverse toggleable>
           <NavbarBrand href="/">Focus Group Tool</NavbarBrand>
           <Nav className="ml-auto" navbar>
-            {(filters.length > 0 || data.length > 0) && (
+            {(filters.length > 0 || filteredData.length > 0) && (
               <NavItem>
                 <Button color="primary" onClick={this.gotoFocusGroup}>
                   Create Focus Group
@@ -189,7 +270,7 @@ export default class Home extends Component {
             removeFilter={removeFilter}
           />
           <ResponseTable
-            list={data}
+            list={filteredData}
             addToGroup={addToGroup}
             activeGroup={activeGroup}
             markAsUnavailable={markAsUnavailable}
