@@ -23,7 +23,7 @@ import FocusGroupTable from './FocusGroupTable';
 import ActiveFilters from './ActiveFilters';
 import { COLUMNS, COLUMNSBYID } from '../utils/constants';
 import { capitalize, getAvailableCandidates } from '../utils/helpers';
-import { calculateUnmetCriteria, selectFocusGroup, getAccuracyOfFocusGroup } from '../utils/algorithms';
+import { calculateUnmetCriteria, selectFocusGroup } from '../utils/algorithms';
 
 import styles from './Home.css';
 
@@ -41,7 +41,7 @@ export default class Home extends Component {
   }
 
   componentWillMount() {
-    const { loadDataSet, loadState } = this.props;
+    const { loadDataSet } = this.props;
     ipcRenderer.on('file-loaded', (event, data) => {
       loadDataSet(data.candidates);
 
@@ -53,10 +53,6 @@ export default class Home extends Component {
         });
         window.alert(message);
       }
-    });
-
-    ipcRenderer.on('state-loaded', (event, state) => {
-      loadState(state);
     });
   }
 
@@ -75,15 +71,6 @@ export default class Home extends Component {
       groupName: focusGroupMeta.name,
       group: focusGroupArray,
     });
-  }
-
-  onLoadButtonClick = () => {
-    ipcRenderer.send('open-load-dialog');
-  }
-
-  onSaveButtonClick = () => {
-    const { store } = this.context;
-    ipcRenderer.send('open-save-dialog', store.getState());
   }
 
   getRefillInputRef = ref => { this.refillInput = ref; }
@@ -256,12 +243,6 @@ export default class Home extends Component {
                 </Button>
               </NavItem>
             )}
-            <NavItem>
-              <Button outline onClick={this.onLoadButtonClick}>Load</Button>
-            </NavItem>
-            <NavItem>
-              <Button outline onClick={this.onSaveButtonClick}>Save</Button>
-            </NavItem>
           </Nav>
         </Navbar>
         <div className="container" data-tid="container">
