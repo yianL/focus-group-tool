@@ -40,7 +40,7 @@ const DEMOGRAPHIC_METRICS = {
   ethnicity: {
     style: { backgroundColor: '#fcf8e3' },
     columns: [
-      { name: 'ethnicity', value: 'White (not Hispanic or Latino)', label: 'Wh' },
+      { name: 'ethnicity', value: 'White (not Hispanic or Latino)', matchValue: 'White', label: 'Wh' },
       { name: 'ethnicity', value: 'Hispanic or Latino', label: 'Hi' },
       { name: 'ethnicity', value: 'Black or African American', label: 'Bl' },
       { name: 'ethnicity', value: 'American Indian or Alaska Native', label: 'Am' },

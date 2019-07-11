@@ -94,7 +94,7 @@ export default class CreateGroup extends Component {
       prev.concat(
         constraints[current].map((percentile, index) => ({
           category: current,
-          target: DEMOGRAPHIC_METRICS[current].columns[index].value,
+          target: DEMOGRAPHIC_METRICS[current].columns[index].matchValue || DEMOGRAPHIC_METRICS[current].columns[index].value,
           count: Number.isFinite(percentile) ? Math.round(percentile * groupSize / 100) : null,
           percentile,
         }))

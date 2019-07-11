@@ -124,7 +124,14 @@ class FocusGroupTable extends PureComponent {
         key={key}
         style={style}
       >
-        {datum[columnName].startsWith(column.value) ? 'O' : ''}
+        {
+          // eslint-disable-next-line no-nested-ternary
+          column.matchValue ? (
+            datum[columnName].toLowerCase().startsWith(column.matchValue.toLowerCase()) ? 'O' : ''
+          ) : (
+            datum[columnName].toLowerCase().startsWith(column.value.toLowerCase()) ? 'O' : ''
+          )
+        }
       </div>
     );
   }

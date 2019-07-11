@@ -46,3 +46,5 @@ resources/focusGroupState1.json
 
 .idea
 npm-debug.log.*
+
+flow-typed/

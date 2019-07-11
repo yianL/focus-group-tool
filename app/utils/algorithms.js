@@ -129,7 +129,11 @@ const scoreConstraint = (people, constraint, getOffset = false) => {
 const personFitsConstraint = (person, constraint) => {
   const category = constraint.category;
   const target = constraint.target;
-  const actual = person[category];
+  let actual = person[category];
+
+  if (category === 'ethnicity' && actual.toLowerCase().startsWith('white')) {
+    actual = 'White';
+  }
 
   return (Array.isArray(actual) ? actual[0] : actual).includes(target);
 };
