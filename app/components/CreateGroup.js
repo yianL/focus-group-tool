@@ -193,7 +193,7 @@ export default class CreateGroup extends Component {
               />
             </h5>
           </div>
-          <div className={styles.groupSize}>
+          <div>
             <h5>
               Availability:
               {availabilities.map(o => (
