@@ -156,13 +156,13 @@ export default class Home extends Component {
             </ul>
           </Col>
           <Col xs="4" className="d-flex justify-content-end">
-            <Button onClick={this.openRefillModal} className="mr-2">
+            <Button outline onClick={this.openRefillModal} className="mr-2">
               Refill Group
             </Button>
-            <Button onClick={this.onExportData} className="mr-2">
+            <Button outline onClick={this.onExportData} className="mr-2">
               Export
             </Button>
-            <Button onClick={this.gotoCheckin}>
+            <Button outline onClick={this.gotoCheckin}>
               Check-in
             </Button>
           </Col>

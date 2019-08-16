@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import { push } from 'react-router-redux';
 import { Button, Table, Nav, Navbar, NavItem } from 'reactstrap';
-import Plottable from 'plottable';
+import { Dataset, Scales, Plots, Components } from 'plottable';
 import { ipcRenderer } from 'electron';
 import { COLUMNS, DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
@@ -84,7 +84,8 @@ export default class Home extends React.Component {
     }));
 
     setTimeout(() => {
-      const dataset = new Plottable.Dataset(chartData);
+
+      const dataset = new Dataset(chartData);
 
       if (this.charts[key]) {
         const oldDataset = this.charts[key].dataset;
@@ -98,17 +99,17 @@ export default class Home extends React.Component {
         return;
       }
 
-      const colorScale = new Plottable.Scales.Color();
+      const colorScale = new Scales.Color();
       this.charts[key] = {
         dataset,
-        chart: new Plottable.Plots.Pie()
+        chart: new Plots.Pie()
           .attr('fill', d => d.name, colorScale)
           .addDataset(dataset)
           .sectorValue(d => d.count)
           .labelsEnabled(true)
           // .labelFormatter(function(n){ return '$ ' + n ;})
           .renderTo(`div#chart-${key}`),
-        legend: new Plottable.Components.Legend(colorScale)
+        legend: new Components.Legend(colorScale)
           .xAlignment('left')
           .yAlignment('center')
           .renderTo(`div#legend-${key}`)
@@ -230,7 +231,7 @@ export default class Home extends React.Component {
           </span>
           <Nav className="ml-auto" navbar>
             <NavItem>
-              <Button onClick={this.gotoHome}>
+              <Button outline onClick={this.gotoHome}>
                 <i className="fa fa-chevron-circle-left fa-fw" />
                 Back
               </Button>
@@ -243,8 +244,8 @@ export default class Home extends React.Component {
               <tr>
                 <th>
                   {checkInStatus.length < focusGroup.length
-                    ? <Button color="primary" size="sm" onClick={this.checkAllIn}>Check all</Button>
-                    : <Button color="primary" size="sm" onClick={this.uncheckAllIn}>Uncheck all</Button>
+                    ? <Button color="info" size="sm" onClick={this.checkAllIn}>Check all</Button>
+                    : <Button color="info" size="sm" onClick={this.uncheckAllIn}>Uncheck all</Button>
                   }
                 </th>
                 <th>Name</th>
@@ -258,7 +259,7 @@ export default class Home extends React.Component {
                   <tr>
                     <td>
                       {checkedIn
-                        ? <Button size="sm" onClick={() => uncheckPersonIn(person.id, activeGroup)}>Undo</Button>
+                        ? <Button outline size="sm" onClick={() => uncheckPersonIn(person.id, activeGroup)}>Undo</Button>
                         : <Button color="info" size="sm" onClick={() => checkPersonIn(person.id, activeGroup)}>Check-in</Button>
                       }
                     </td>
@@ -274,8 +275,8 @@ export default class Home extends React.Component {
           </Table>
           <div className="actionBar">
             <Button color="primary" onClick={this.onExportData}>Export Attendees</Button>
-            <Button onClick={this.onSaveAttendees}>Save Attendees into DB</Button>
-            <Button onClick={this.toggleDemographic}>Demographics Summary</Button>
+            <Button outline onClick={this.onSaveAttendees}>Save Attendees into DB</Button>
+            <Button outline onClick={this.toggleDemographic}>Demographics Summary</Button>
           </div>
           {showDemographicSummary && this.renderDemographicsSummary()}
         </div>
