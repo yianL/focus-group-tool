@@ -76,7 +76,10 @@ export default class Home extends React.Component {
     const { focusGroupMeta } = this.props;
     const constraints = focusGroupMeta.constraints[key] || [];
     const counts = columns.map((col) =>
-      group.filter(person => person[col.name].includes(col.value)).length);
+      group.filter(person => {
+        const matcher = (col.matchValue || col.value).toLowerCase();
+        return person[col.name].toLowerCase().startsWith(matcher);
+      }).length);
     const percentile = counts.map(c => (c * 100 / groupSize).toFixed(1));
     const chartData = counts.map((c, index) => ({
       name: columns[index].value,
