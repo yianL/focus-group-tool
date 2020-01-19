@@ -6,6 +6,7 @@ import settings from 'electron-settings';
 import stringify from 'csv-stringify';
 import MenuBuilder from './menu';
 import { COLUMNSBYID } from './utils/constants';
+import { migrationSaveNameEmailDate } from './utils/migrations';
 
 let mainWindow = null;
 
@@ -48,10 +49,8 @@ const installExtensions = async () => {
 app.on('ready', async () => {
   await installExtensions();
 
-  // Initialize configs
-  if (!settings.has('pastParticipants')) {
-    settings.set('pastParticipants', []);
-  }
+  // run all migrations
+  migrationSaveNameEmailDate(settings);
 
   mainWindow = new BrowserWindow({
     show: false,
@@ -92,7 +91,7 @@ ipcMain.on('open-file-dialog', (event) =>
         const filteredOut = [];
         const included = [];
         const candidates = result.filter((person) => {
-          const email = person[COLUMNSBYID.email.index - 1];
+          const email = person[COLUMNSBYID.email.index - 1].toLowerCase();
           if (pastParticipants.includes(email) || included.includes(email)) {
             filteredOut.push(person);
             return false;
@@ -179,14 +178,34 @@ ipcMain.on('export-csv', (event, data) => {
   });
 });
 
-ipcMain.on('save-to-db', (event, data) => {
+ipcMain.on('save-to-db', (event, { data, groupDate }) => {
   const pastParticipants = settings.get('pastParticipants');
-  settings.set('pastParticipants', pastParticipants.concat(data));
-  console.log(`${data.length} entries saved to DB`);
-  event.sender.send('saved', data);
+  const now = Date.now();
+  const toSave = data.map(ent => ({
+    name: ent.name,
+    email: ent.email,
+    createdAt: now,
+    lastFocusGroupDate: groupDate,
+    released: false,
+  })).filter(ent => {
+    const idx = pastParticipants.findIndex(p => p.email === ent.email.toLowerCase());
+    if (idx < 0) {
+      // not found, save to DB
+      return true;
+    }
+
+    // already in DB, just update the entry
+    pastParticipants[idx].released = false;
+    pastParticipants[idx].lastFocusGroupDate = groupDate;
+
+    return false;
+  });
+
+  settings.set('pastParticipants', pastParticipants.concat(toSave));
+  event.sender.send('saved', { data, groupDate });
 });
 
-ipcMain.on('clear-db', (event) => {
+ipcMain.on('clear-db', () => {
   settings.set('pastParticipants', []);
   console.log('DB purged');
 });
