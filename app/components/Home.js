@@ -56,6 +56,10 @@ export default class Home extends Component {
     });
   }
 
+  componentWillUnmount() {
+    ipcRenderer.removeAllListeners('file-loaded');
+  }
+
   onExportData = () => {
     const { focusGroup, focusGroupMeta } = this.props;
     const exportColumns = COLUMNS.slice(1);
@@ -241,6 +245,7 @@ export default class Home extends Component {
               <Button color="secondary" onClick={this.gotoManageDB}>
                 Manage past participants
               </Button>
+              {' '}
               {(filters.length > 0 || filteredData.length > 0) && (
                 <Button color="primary" onClick={this.gotoFocusGroup}>
                   Create Focus Group

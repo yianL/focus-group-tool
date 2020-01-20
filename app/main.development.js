@@ -181,16 +181,16 @@ ipcMain.on('export-csv', (event, data) => {
 });
 
 ipcMain.on('save-to-db', (event, { data, groupDate }) => {
-  const pastParticipants = settings.get('pastParticipants');
+  const pastParticipants = settings.get('pastParticipants', []);
   const now = Date.now();
   const toSave = data.map(ent => ({
     name: ent.name,
-    email: ent.email,
+    email: ent.email.toLowerCase(),
     createdAt: now,
     lastFocusGroupDate: groupDate,
     released: false,
   })).filter(ent => {
-    const idx = pastParticipants.findIndex(p => p.email === ent.email.toLowerCase());
+    const idx = pastParticipants.findIndex(p => p.email === ent.email);
     if (idx < 0) {
       // not found, save to DB
       return true;
