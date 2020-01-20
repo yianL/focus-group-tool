@@ -5,11 +5,13 @@ import App from './containers/App';
 import HomePage from './containers/HomePage';
 import CreateGroupPage from './containers/CreateGroupPage';
 import CheckinPage from './containers/CheckinPage';
+import ManageAttendees from './containers/ManageAttendees';
 
 export default (
   <Route path="/" component={App}>
     <IndexRoute component={HomePage} />
     <Route path="/create" component={CreateGroupPage} />
     <Route path="/checkin" component={CheckinPage} />
+    <Route path="/manage" component={ManageAttendees} />
   </Route>
 );

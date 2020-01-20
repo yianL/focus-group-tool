@@ -5,25 +5,14 @@ import React, { PropTypes, PureComponent } from 'react';
 import { AutoSizer, MultiGrid } from 'react-virtualized';
 import { COLUMNS, DEMOGRAPHIC_METRICS } from '../utils/constants';
 import { capitalize } from '../utils/helpers';
+import {
+  STYLE_BASE,
+  STYLE_BOTTOM_LEFT_GRID,
+  STYLE_TOP_LEFT_GRID,
+  STYLE_TOP_RIGHT_GRID,
+} from './GridStyles';
 import styles from './FocusGroupTable.css';
 
-const STYLE = {
-  border: '1px solid #ddd',
-  backgroundColor: '#ffffff',
-};
-const STYLE_BOTTOM_LEFT_GRID = {
-  borderRight: '2px solid #aaa',
-  backgroundColor: '#f7f7f7',
-};
-const STYLE_TOP_LEFT_GRID = {
-  borderBottom: '2px solid #aaa',
-  borderRight: '2px solid #aaa',
-  fontWeight: 'bold'
-};
-const STYLE_TOP_RIGHT_GRID = {
-  borderBottom: '2px solid #aaa',
-  fontWeight: 'bold'
-};
 
 class FocusGroupTable extends PureComponent {
   static propTypes = {
@@ -153,7 +142,7 @@ class FocusGroupTable extends PureComponent {
               height={260}
               rowHeight={40}
               rowCount={list.length > 0 ? list.length + 2 : 0}
-              style={STYLE}
+              style={STYLE_BASE}
               styleBottomLeftGrid={STYLE_BOTTOM_LEFT_GRID}
               styleTopLeftGrid={STYLE_TOP_LEFT_GRID}
               styleTopRightGrid={STYLE_TOP_RIGHT_GRID}

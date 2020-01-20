@@ -76,6 +76,7 @@ export default class Home extends Component {
   getRefillInputRef = ref => { this.refillInput = ref; }
 
   gotoFocusGroup = () => this.context.store.dispatch(push('/create'));
+  gotoManageDB = () => this.context.store.dispatch(push('/manage'));
   gotoCheckin = () => this.context.store.dispatch(push('/checkin'));
 
   handleSelectActiveGroup = (e) => {
@@ -234,15 +235,18 @@ export default class Home extends Component {
     return (
       <div>
         <Navbar color="inverse" inverse toggleable>
-          <NavbarBrand href="/">Focus Group Tool</NavbarBrand>
+          <NavbarBrand>Focus Group Tool</NavbarBrand>
           <Nav className="ml-auto" navbar>
-            {(filters.length > 0 || filteredData.length > 0) && (
-              <NavItem>
+            <NavItem>
+              <Button color="secondary" onClick={this.gotoManageDB}>
+                Manage past participants
+              </Button>
+              {(filters.length > 0 || filteredData.length > 0) && (
                 <Button color="primary" onClick={this.gotoFocusGroup}>
                   Create Focus Group
                 </Button>
-              </NavItem>
-            )}
+              )}
+            </NavItem>
           </Nav>
         </Navbar>
         <div className="container" data-tid="container">

@@ -87,7 +87,9 @@ ipcMain.on('open-file-dialog', (event) =>
       if (err) throw err;
       parse(data, { autoParse: true }, (error, result) => {
         if (error) throw error;
-        const pastParticipants = settings.get('pastParticipants').map(p => p.email);
+        const pastParticipants = settings.get('pastParticipants')
+          .filter(p => !p.released)
+          .map(p => p.email);
         const filteredOut = [];
         const included = [];
         const candidates = result.filter((person) => {
@@ -203,6 +205,11 @@ ipcMain.on('save-to-db', (event, { data, groupDate }) => {
 
   settings.set('pastParticipants', pastParticipants.concat(toSave));
   event.sender.send('saved', { data, groupDate });
+});
+
+ipcMain.on('db-get', (event, { key }) => {
+  const data = settings.get(key);
+  event.sender.send('db-got', { key, data });
 });
 
 ipcMain.on('clear-db', () => {

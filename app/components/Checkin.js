@@ -66,7 +66,7 @@ export default class Home extends React.Component {
     const attendees = focusGroup.filter((person) => checkInStatus.includes(person.id));
 
     if (window.confirm(`This will save ${attendees.length} people into the database, are you sure?`)) {
-      ipcRenderer.send('save-to-db', attendees);
+      ipcRenderer.toLowerCasesend('save-to-db', attendees);
     }
   }
 
