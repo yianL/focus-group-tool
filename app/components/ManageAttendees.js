@@ -32,46 +32,6 @@ const InitialState = {
   dateFilter: null,
 };
 
-const COLUMNS = [
-  {
-    header: 'Selected',
-    width: WIDTH.action,
-  },
-  {
-    header: 'Full Name',
-    width: WIDTH.long,
-    name: 'name',
-  },
-  {
-    header: 'Email',
-    width: WIDTH.long,
-    name: 'email',
-  },
-  {
-    header: 'Last Checked-in',
-    width: WIDTH.long,
-    name: 'lastFocusGroupDate',
-    renderer: (value) => { return value ? moment(value).format('MM/DD/YYYY') : '---'; },
-  },
-  {
-    header: 'Available',
-    width: WIDTH.boolean,
-    name: 'released',
-    renderer: (value) => value ? (
-      <Button color="success" size="sm">Yes</Button>
-    ) : (
-      <Button color="danger" size="sm">No</Button>
-    ),
-  },
-  {
-    header: 'First Added Date',
-    width: WIDTH.short,
-    name: 'createdAt',
-    renderer: (value) => { return value ? moment(value).format('MM/DD/YYYY') : '---'; },
-  },
-];
-
-
 class ManageAttendees extends PureComponent {
   static contextTypes = {
     store: PropTypes.any,
@@ -133,9 +93,61 @@ class ManageAttendees extends PureComponent {
     });
   }
 
-  getColumnWidth = ({ index }) => COLUMNS[index].width;
+  onSetRow = (row, released) => {
+    const { data } = this.state;
+    const newData = data.map(d => d === row ? ({
+      ...d,
+      released,
+    }) : d);
+
+    this.setState({
+      data: newData,
+      unsavedChanges: true,
+    });
+  }
+
+  getColumnWidth = ({ index }) => this.Columns[index].width;
 
   gotoHome = () => this.context.store.dispatch(push('/'));
+
+  Columns = [
+    {
+      header: 'Selected',
+      width: WIDTH.action,
+    },
+    {
+      header: 'Full Name',
+      width: WIDTH.long,
+      name: 'name',
+    },
+    {
+      header: 'Email',
+      width: WIDTH.long,
+      name: 'email',
+    },
+    {
+      header: 'Last Checked-in',
+      width: WIDTH.long,
+      name: 'lastFocusGroupDate',
+      renderer: (value) => { return value ? moment(value).format('MM/DD/YYYY') : '---'; },
+    },
+    {
+      header: 'Available',
+      width: WIDTH.boolean,
+      name: 'released',
+      renderer: (value, row) => value ? (
+        <Button color="success" size="sm" onClick={() => this.onSetRow(row, false)}>Yes</Button>
+      ) : (
+        <Button color="danger" size="sm" onClick={() => this.onSetRow(row, true)}>No</Button>
+      ),
+    },
+    {
+      header: 'First Added Date',
+      width: WIDTH.short,
+      name: 'createdAt',
+      renderer: (value) => { return value ? moment(value).format('MM/DD/YYYY') : '---'; },
+    },
+  ];
 
   unselectAll = () => {
     const { data } = this.state;
@@ -158,7 +170,7 @@ class ManageAttendees extends PureComponent {
     const {
       data,
     } = this.state;
-    const column = COLUMNS[columnIndex];
+    const column = this.Columns[columnIndex];
 
     if (rowIndex === 0) {
       return (
@@ -203,7 +215,7 @@ class ManageAttendees extends PureComponent {
         key={key}
         style={style}
       >
-        {renderer ? renderer(datum[columnName]) : datum[columnName]}
+        {renderer ? renderer(datum[columnName], datum) : datum[columnName]}
       </div>
     );
   }
