@@ -212,6 +212,11 @@ ipcMain.on('db-get', (event, { key }) => {
   event.sender.send('db-got', { key, data });
 });
 
+ipcMain.on('db-set', (event, { key, data }) => {
+  settings.set(key, data);
+  event.sender.send('db-done', { key, data });
+});
+
 ipcMain.on('clear-db', () => {
   settings.set('pastParticipants', []);
   console.log('DB purged');

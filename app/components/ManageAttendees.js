@@ -25,6 +25,7 @@ import styles from './ResponseTable.css';
 
 const InitialState = {
   data: [],
+  unsavedChanges: false,
   sortBy: null,
   sortDirection: 'asc',
   nameFilter: null,
@@ -40,13 +41,11 @@ const COLUMNS = [
     header: 'Full Name',
     width: WIDTH.long,
     name: 'name',
-    search: true,
   },
   {
     header: 'Email',
     width: WIDTH.long,
     name: 'email',
-    search: true,
   },
   {
     header: 'Last Checked-in',
@@ -55,11 +54,14 @@ const COLUMNS = [
     renderer: (value) => { return value ? moment(value).format('MM/DD/YYYY') : '---'; },
   },
   {
-    header: 'Released',
+    header: 'Available',
     width: WIDTH.boolean,
     name: 'released',
-    filter: 'BOOLEAN',
-    renderer: (value) => { return value ? 'Yes' : 'No'; },
+    renderer: (value) => value ? (
+      <Button color="success" size="sm">Yes</Button>
+    ) : (
+      <Button color="danger" size="sm">No</Button>
+    ),
   },
   {
     header: 'First Added Date',
@@ -74,10 +76,6 @@ class ManageAttendees extends PureComponent {
   static contextTypes = {
     store: PropTypes.any,
   };
-
-  static propTypes = {
-    data: PropTypes.arrayOf(PropTypes.any).isRequired,
-  }
 
   constructor(props) {
     super(props);
@@ -98,13 +96,63 @@ class ManageAttendees extends PureComponent {
 
   onDBGot = (event, { key, data }) => {
     if (key === 'pastParticipants') {
-      this.setState({ data });
+      this.setState({
+        data: data.map(d => ({
+          ...d,
+          selected: false,
+        }))
+      });
     }
   }
 
-  gotoHome = () => this.context.store.dispatch(push('/'));
+  onSelectRow = (row) => {
+    const { data } = this.state;
+    const idx = data.findIndex(d => d === row);
+
+    const newData = data.slice(0, idx)
+      .concat({ ...row, selected: !row.selected })
+      .concat(data.slice(idx + 1));
+
+    this.setState({ data: newData });
+  }
+
+  onRelease = () => this.onSetReleased(true)
+
+  onUnrelease = () => this.onSetReleased(false)
+
+  onSetReleased = (released) => {
+    const { data } = this.state;
+    const newData = data.map(d => d.selected ? ({
+      ...d,
+      released,
+    }) : d);
+
+    this.setState({
+      data: newData,
+      unsavedChanges: true,
+    });
+  }
 
   getColumnWidth = ({ index }) => COLUMNS[index].width;
+
+  gotoHome = () => this.context.store.dispatch(push('/'));
+
+  unselectAll = () => {
+    const { data } = this.state;
+    const newData = data.map(d => d.selected ? ({
+      ...d,
+      selected: false,
+    }) : d);
+
+    this.setState({ data: newData });
+  }
+
+  saveAndGoHome = () => {
+    const { data } = this.state;
+    data.forEach(d => delete d.selected);
+    ipcRenderer.once('db-done', () => this.context.store.dispatch(push('/')));
+    ipcRenderer.send('db-set', { key: 'pastParticipants', data });
+  }
 
   cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
     const {
@@ -122,13 +170,6 @@ class ManageAttendees extends PureComponent {
           <div className={styles.headerDiv} title={column.header}>
             {column.header}
           </div>
-          {(column.search || column.filter) && (
-            <i
-              className="fa fa-filter action"
-              title="Filters"
-              onClick={() => this.handleOpenModal(column)}
-            />
-          )}
         </div>
       );
     }
@@ -145,7 +186,13 @@ class ManageAttendees extends PureComponent {
           key={key}
           style={style}
         >
-          <Button outline color="secondary"></Button>
+          <Button outline color="secondary" onClick={() => this.onSelectRow(datum)}>
+            {datum.selected ? (
+              <i className="fa fa-fw fa-check action" />
+            ) : (
+              <i className="fa fa-fw action" />
+            )}
+          </Button>
         </div>
       );
     }
@@ -162,7 +209,8 @@ class ManageAttendees extends PureComponent {
   }
 
   render() {
-    const { data } = this.state;
+    const { data, unsavedChanges } = this.state;
+    const selectedCount = data.reduce((prev, cur) => cur.selected ? (prev + 1) : prev, 0);
 
     return (
       <div>
@@ -170,14 +218,35 @@ class ManageAttendees extends PureComponent {
           <NavbarBrand>Focus Group Tool</NavbarBrand>
           <Nav className="ml-auto" navbar>
             <NavItem>
-              <Button color="secondary" onClick={this.gotoHome}>
-                <i className="fa fa-chevron-circle-left fa-fw" />
-                Back
-              </Button>
+              {unsavedChanges ? (
+                <Button outline color="secondary" onClick={this.saveAndGoHome}>
+                  <i className="fa fa-chevron-circle-left fa-fw" />
+                  Save & Back
+                </Button>
+              ) : (
+                <Button outline color="secondary" onClick={this.gotoHome}>
+                  <i className="fa fa-chevron-circle-left fa-fw" />
+                  Back
+                </Button>
+              )}
             </NavItem>
           </Nav>
         </Navbar>
         <div className="container" data-tid="container">
+          <div>
+            <span>
+              {selectedCount} Selected
+            </span>
+            <Button outline color="info" size="sm" onClick={this.onRelease}>
+              Set Available
+            </Button>
+            <Button outline color="info" size="sm" onClick={this.onUnrelease}>
+              Set Unavailable
+            </Button>
+            <Button outline color="info" size="sm" onClick={this.unselectAll}>
+              Unselect All
+            </Button>
+          </div>
           {data.length > 0 && (
             <AutoSizer disableHeight>
               {({ width }) => (
