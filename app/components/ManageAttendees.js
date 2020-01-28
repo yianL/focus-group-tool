@@ -2,6 +2,7 @@
  * @flow
  */
 import React, { PropTypes, PureComponent } from 'react';
+import cn from 'classnames';
 import moment from 'moment';
 import { push } from 'react-router-redux';
 import { ipcRenderer } from 'electron';
@@ -27,10 +28,12 @@ const InitialState = {
   data: [],
   unsavedChanges: false,
   sortBy: null,
-  sortDirection: 'asc',
+  sortAscending: true,
   nameFilter: null,
-  dateFilter: null,
 };
+
+const ASC = (key) => (a, b) => a[key] - b[key];
+const DESC = (key) => (a, b) => b[key] - a[key];
 
 class ManageAttendees extends PureComponent {
   static contextTypes = {
@@ -106,6 +109,25 @@ class ManageAttendees extends PureComponent {
     });
   }
 
+  onSort = (key) => {
+    const { data, sortAscending, sortBy } = this.state;
+    let newSortAscending;
+
+    if (sortBy === key) {
+      newSortAscending = !sortAscending;
+    } else {
+      newSortAscending = true;
+    }
+
+    const newData = data.sort(newSortAscending ? ASC(key) : DESC(key));
+
+    this.setState({
+      data: [...newData],
+      sortBy: key,
+      sortAscending: newSortAscending,
+    });
+  }
+
   getColumnWidth = ({ index }) => this.Columns[index].width;
 
   gotoHome = () => this.context.store.dispatch(push('/'));
@@ -129,6 +151,7 @@ class ManageAttendees extends PureComponent {
       header: 'Last Checked-in',
       width: WIDTH.long,
       name: 'lastFocusGroupDate',
+      sort: true,
       renderer: (value) => { return value ? moment(value).format('MM/DD/YYYY') : '---'; },
     },
     {
@@ -145,6 +168,7 @@ class ManageAttendees extends PureComponent {
       header: 'First Added Date',
       width: WIDTH.short,
       name: 'createdAt',
+      sort: true,
       renderer: (value) => { return value ? moment(value).format('MM/DD/YYYY') : '---'; },
     },
   ];
@@ -169,6 +193,8 @@ class ManageAttendees extends PureComponent {
   cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
     const {
       data,
+      sortBy,
+      sortAscending,
     } = this.state;
     const column = this.Columns[columnIndex];
 
@@ -180,7 +206,14 @@ class ManageAttendees extends PureComponent {
           style={style}
         >
           <div className={styles.headerDiv} title={column.header}>
-            {column.header}
+            {column.sort ? (
+              <button type="button" onClick={() => this.onSort(column.name)}>
+                <span>{column.header}</span>
+                {sortBy === column.name && sortAscending !== undefined ? (
+                  <i className={cn('fa', 'fa-fw', sortAscending ? 'fa-sort-asc' : 'fa-sort-desc')} />
+                ) : undefined}
+              </button>
+            ) : column.header}
           </div>
         </div>
       );
