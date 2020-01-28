@@ -13,6 +13,9 @@ import {
   Navbar,
   NavbarBrand,
   NavItem,
+  Form,
+  Input,
+  FormGroup,
 } from 'reactstrap';
 import { WIDTH } from '../utils/constants';
 import {
@@ -26,10 +29,11 @@ import styles from './ResponseTable.css';
 
 const InitialState = {
   data: [],
+  filteredData: null,
   unsavedChanges: false,
   sortBy: null,
   sortAscending: true,
-  nameFilter: null,
+  nameFilter: '',
 };
 
 const ASC = (key) => (a, b) => a[key] - b[key];
@@ -57,6 +61,13 @@ class ManageAttendees extends PureComponent {
     ipcRenderer.removeAllListeners('db-got');
   }
 
+  onClear = () => {
+    this.setState({
+      nameFilter: '',
+      filteredData: null,
+    });
+  }
+
   onDBGot = (event, { key, data }) => {
     if (key === 'pastParticipants') {
       this.setState({
@@ -66,6 +77,12 @@ class ManageAttendees extends PureComponent {
         }))
       });
     }
+  }
+
+  onSearchChange = (event) => {
+    this.setState({
+      nameFilter: event.target.value,
+    });
   }
 
   onSelectRow = (row) => {
@@ -126,6 +143,27 @@ class ManageAttendees extends PureComponent {
       sortBy: key,
       sortAscending: newSortAscending,
     });
+  }
+
+  onSubmit = (event) => {
+    event.preventDefault();
+
+    const {
+      nameFilter,
+      data,
+    } = this.state;
+
+    if (!!nameFilter) {
+      const filter = nameFilter.toLowerCase();
+      this.setState({
+        filteredData: data.filter(d =>
+          d.name.toLowerCase().includes(filter) || d.email.toLowerCase().includes(filter))
+      });
+    } else {
+      this.setState({
+        filteredData: null,
+      });
+    }
   }
 
   getColumnWidth = ({ index }) => this.Columns[index].width;
@@ -242,6 +280,26 @@ class ManageAttendees extends PureComponent {
       );
     }
 
+    const { nameFilter } = this.state;
+
+    if (!!nameFilter && (columnName === 'name' || columnName === 'email')) {
+      const str = datum[columnName];
+      const idx = str.toLowerCase().indexOf(nameFilter.toLowerCase());
+      if (idx > -1) {
+        return (
+          <div
+            className={styles.Cell}
+            key={key}
+            style={style}
+          >
+            <span>{str.substr(0, idx)}</span>
+            <span className={styles.highlighted}>{str.substr(idx, nameFilter.length)}</span>
+            <span>{str.substr(idx + nameFilter.length)}</span>
+          </div>
+        );
+      }
+    }
+
     return (
       <div
         className={styles.Cell}
@@ -254,8 +312,10 @@ class ManageAttendees extends PureComponent {
   }
 
   render() {
-    const { data, unsavedChanges } = this.state;
+    const { data, filteredData, unsavedChanges, nameFilter } = this.state;
     const selectedCount = data.reduce((prev, cur) => cur.selected ? (prev + 1) : prev, 0);
+
+    const dataset = filteredData || data;
 
     return (
       <div>
@@ -279,6 +339,26 @@ class ManageAttendees extends PureComponent {
         </Navbar>
         <div className="container" data-tid="container">
           <div>
+            <Form
+              inline
+              onSubmit={this.onSubmit}
+            >
+              <div>
+                Showing { dataset.length } out of { data.length } records
+              </div>
+              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Input
+                  type="text"
+                  name="nameSearch"
+                  placeholder={'eg. "jonh"'}
+                  onChange={this.onSearchChange}
+                  value={nameFilter}
+                />
+              </FormGroup>
+              <Button>Search</Button>
+              <Button type="button" onClick={this.onClear}>Clear</Button>
+            </Form>
+
             <span>
               {selectedCount} Selected
             </span>
@@ -296,7 +376,7 @@ class ManageAttendees extends PureComponent {
             <AutoSizer disableHeight>
               {({ width }) => (
                 <MultiGrid
-                  list={data}
+                  list={dataset}
                   fixedColumnCount={1}
                   fixedRowCount={1}
                   cellRenderer={this.cellRenderer}
@@ -304,7 +384,7 @@ class ManageAttendees extends PureComponent {
                   columnCount={6}
                   height={500}
                   rowHeight={40}
-                  rowCount={data.length + 1}
+                  rowCount={dataset.length + 1}
                   style={STYLE_BASE}
                   styleBottomLeftGrid={STYLE_BOTTOM_LEFT_GRID}
                   styleTopLeftGrid={STYLE_TOP_LEFT_GRID}

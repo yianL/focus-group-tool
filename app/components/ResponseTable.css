@@ -68,3 +68,7 @@
 .filters li:hover {
   background-color: #efefef;
 }
+
+.highlighted {
+  background-color: #fff490;
+}
