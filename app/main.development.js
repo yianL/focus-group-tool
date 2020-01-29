@@ -6,7 +6,10 @@ import settings from 'electron-settings';
 import stringify from 'csv-stringify';
 import MenuBuilder from './menu';
 import { COLUMNSBYID } from './utils/constants';
-import { migrationSaveNameEmailDate } from './utils/migrations';
+import {
+  migrationSaveNameEmailDate,
+  scanAndReleaseCandidates,
+} from './utils/migrations';
 
 let mainWindow = null;
 
@@ -51,6 +54,9 @@ app.on('ready', async () => {
 
   // run all migrations
   migrationSaveNameEmailDate(settings);
+
+  // scan and release candidates last participated over 18 months
+  scanAndReleaseCandidates(settings);
 
   mainWindow = new BrowserWindow({
     show: false,
