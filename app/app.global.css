@@ -14,6 +14,10 @@ body {
   width: 90%;
 }
 
+.navbar {
+  margin-bottom: 20px;
+}
+
 .actionBar {
   display: flex;
   flex-direction: row;

@@ -11,10 +11,13 @@ export const STYLE_BOTTOM_LEFT_GRID = {
 export const STYLE_TOP_LEFT_GRID = {
   borderBottom: '2px solid #aaa',
   borderRight: '2px solid #aaa',
-  fontWeight: 'bold'
+  fontWeight: 'bold',
+  backgroundColor: '#ddefff',
 };
 
 export const STYLE_TOP_RIGHT_GRID = {
   borderBottom: '2px solid #aaa',
-  fontWeight: 'bold'
+  borderRight: '2px solid #aaa',
+  fontWeight: 'bold',
+  backgroundColor: '#ddefff',
 };

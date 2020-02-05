@@ -33,6 +33,10 @@
   font-size: 12px;
 }
 
+.CellHighlight {
+  background: #f7f7f7;
+}
+
 .no {
   background-color: #f2dede !important;
 }
@@ -71,4 +75,21 @@
 
 .highlighted {
   background-color: #fff490;
+}
+
+.sortHeader {
+  background: transparent;
+  outline: none;
+  border: 0;
+  font-weight: bold;;
+}
+
+.sortHeader:focus {
+  outline: none;
+}
+
+.selectBox {
+  background: transparent;
+  outline: none;
+  border: 1px solid gray;
 }

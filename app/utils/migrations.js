@@ -18,6 +18,7 @@ export function migrationSaveNameEmailDate(db) {
   }));
 
   db.set('pastParticipants', migrated);
+  db.set('pastParticipants_backup', data);
   db.set('migrationSaveNameEmailDate', now);
 
   console.log('Finished "pastParticipants" migration.');

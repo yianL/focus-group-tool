@@ -9,13 +9,18 @@ import { ipcRenderer } from 'electron';
 import { AutoSizer, MultiGrid } from 'react-virtualized';
 import {
   Button,
+  ButtonGroup,
   Nav,
   Navbar,
   NavbarBrand,
   NavItem,
   Form,
   Input,
-  FormGroup,
+  Container,
+  Row,
+  Col,
+  InputGroup,
+  InputGroupAddon
 } from 'reactstrap';
 import { WIDTH } from '../utils/constants';
 import {
@@ -245,11 +250,11 @@ class ManageAttendees extends PureComponent {
         >
           <div className={styles.headerDiv} title={column.header}>
             {column.sort ? (
-              <button type="button" onClick={() => this.onSort(column.name)}>
+              <button type="button" className={styles.sortHeader} onClick={() => this.onSort(column.name)}>
                 <span>{column.header}</span>
                 {sortBy === column.name && sortAscending !== undefined ? (
                   <i className={cn('fa', 'fa-fw', sortAscending ? 'fa-sort-asc' : 'fa-sort-desc')} />
-                ) : undefined}
+                ) : <i className="fa fa-fw fa-sort" />}
               </button>
             ) : column.header}
           </div>
@@ -269,13 +274,13 @@ class ManageAttendees extends PureComponent {
           key={key}
           style={style}
         >
-          <Button outline color="secondary" onClick={() => this.onSelectRow(datum)}>
+          <button className={styles.selectBox} type="button" onClick={() => this.onSelectRow(datum)}>
             {datum.selected ? (
               <i className="fa fa-fw fa-check action" />
             ) : (
               <i className="fa fa-fw action" />
             )}
-          </Button>
+          </button>
         </div>
       );
     }
@@ -302,7 +307,7 @@ class ManageAttendees extends PureComponent {
 
     return (
       <div
-        className={styles.Cell}
+        className={cn(styles.Cell, datum.selected ? styles.CellHighlight : undefined)}
         key={key}
         style={style}
       >
@@ -320,7 +325,7 @@ class ManageAttendees extends PureComponent {
     return (
       <div>
         <Navbar color="inverse" inverse toggleable>
-          <NavbarBrand>Focus Group Tool</NavbarBrand>
+          <NavbarBrand>Manage Participants Database</NavbarBrand>
           <Nav className="ml-auto" navbar>
             <NavItem>
               {unsavedChanges ? (
@@ -338,40 +343,45 @@ class ManageAttendees extends PureComponent {
           </Nav>
         </Navbar>
         <div className="container" data-tid="container">
-          <div>
-            <Form
-              inline
-              onSubmit={this.onSubmit}
-            >
+          <Row>
+            <Col xs="8">
+              <ButtonGroup>
+                <Button outline color="secondary" onClick={this.onRelease} disabled={selectedCount === 0}>
+                  Set Available
+                </Button>
+                <Button outline color="secondary" onClick={this.onUnrelease} disabled={selectedCount === 0}>
+                  Set Unavailable
+                </Button>
+                <Button outline color="secondary" onClick={this.unselectAll} disabled={selectedCount === 0}>
+                  Unselect All
+                </Button>
+              </ButtonGroup>
+              <div>
+                {selectedCount} rows selected
+              </div>
+            </Col>
+            <Col xs="4">
+              <Form onSubmit={this.onSubmit}>
+                <InputGroup>
+                  <Input
+                    className={styles.search}
+                    type="text"
+                    name="nameSearch"
+                    placeholder={'eg. "jonh"'}
+                    onChange={this.onSearchChange}
+                    value={nameFilter}
+                  />
+                  <InputGroupAddon addonType="append">
+                    <Button color="info">Search</Button>
+                    <Button outline type="button" onClick={this.onClear}>Clear</Button>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Form>
               <div>
                 Showing { dataset.length } out of { data.length } records
               </div>
-              <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Input
-                  type="text"
-                  name="nameSearch"
-                  placeholder={'eg. "jonh"'}
-                  onChange={this.onSearchChange}
-                  value={nameFilter}
-                />
-              </FormGroup>
-              <Button>Search</Button>
-              <Button type="button" onClick={this.onClear}>Clear</Button>
-            </Form>
-
-            <span>
-              {selectedCount} Selected
-            </span>
-            <Button outline color="info" size="sm" onClick={this.onRelease}>
-              Set Available
-            </Button>
-            <Button outline color="info" size="sm" onClick={this.onUnrelease}>
-              Set Unavailable
-            </Button>
-            <Button outline color="info" size="sm" onClick={this.unselectAll}>
-              Unselect All
-            </Button>
-          </div>
+            </Col>
+          </Row>
           {data.length > 0 && (
             <AutoSizer disableHeight>
               {({ width }) => (
