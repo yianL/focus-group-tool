@@ -132,7 +132,7 @@ class ManageAttendees extends PureComponent {
   }
 
   onSort = (key) => {
-    const { data, sortAscending, sortBy } = this.state;
+    const { data, filteredData, sortAscending, sortBy } = this.state;
     let newSortAscending;
 
     if (sortBy === key) {
@@ -142,12 +142,20 @@ class ManageAttendees extends PureComponent {
     }
 
     const newData = data.sort(newSortAscending ? ASC(key) : DESC(key));
-
-    this.setState({
+    const newState = {
       data: [...newData],
       sortBy: key,
       sortAscending: newSortAscending,
-    });
+    };
+
+    if (filteredData) {
+      const { nameFilter } = this.state;
+      const filter = nameFilter.toLowerCase();
+      newState.filteredData = data.filter(d =>
+        d.name.toLowerCase().includes(filter) || d.email.toLowerCase().includes(filter));
+    }
+
+    this.setState(newState);
   }
 
   onSubmit = (event) => {
@@ -236,10 +244,12 @@ class ManageAttendees extends PureComponent {
   cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
     const {
       data,
+      filteredData,
       sortBy,
       sortAscending,
     } = this.state;
     const column = this.Columns[columnIndex];
+    const dataset = filteredData || data;
 
     if (rowIndex === 0) {
       return (
@@ -263,7 +273,7 @@ class ManageAttendees extends PureComponent {
     }
 
     const id = rowIndex - 1;
-    const datum = data[id];
+    const datum = dataset[id];
     const { renderer } = column;
     const columnName = column.name;
 
